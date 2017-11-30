@@ -12,6 +12,6 @@ def intro():
     return;
 
 # Now you can call printme function
-myjson = json.loads(open('test.json').read())
+myjson = json.loads(open('files/test.json').read())
 intro()
 print ("my name is " + myjson['lastname'] + ", " + myjson['firstname'] + " " + myjson['lastname'])
