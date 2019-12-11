@@ -13,7 +13,7 @@ jfrog rt pipi -r requirements.txt --trusted-host ${ARTY_HOST:-192.168.41.41} \
 
 python setup.py sdist bdist_wheel
 
-jfrog rt u dist/ $ARTY_MAIN_REPO/ 
+jfrog rt u dist/ $ARTY_MAIN_REPO/ \
   --build-name=$1 \
   --build-number=$2 \
   --module=$3
