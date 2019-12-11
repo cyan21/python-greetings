@@ -1,12 +1,12 @@
 #!/bin/sh
 
 jfrog rt c --interactive=false \
-  --url=http://192.168.41.41:8081/artifactory \
+  --url=http://${ARTY_HOST:-192.168.41.41}:${ARTY_PORT:-8081}/artifactory \
   --user=$ARTY_USER \
   --access-token=$ARTY_TOKEN \
 $ARTY_ID
 
-jfrog rt pipi -r requirements.txt \
+jfrog rt pipi -r requirements.txt --trusted-host ${ARTY_HOST:-192.168.41.41} \
   --build-name=$1 \
   --build-number=$2 \
   --module=$3
