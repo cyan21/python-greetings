@@ -1,24 +1,95 @@
-#!/bin/sh
+#!/bin/bash
 
+usage()
+{
+  echo "=============================================================="
+  echo "This script requires the following environment variables :"
+  echo -e "\t ARTY_URL (example :  http://192.168.41.41/artifactory)"
+  echo -e "\t ARTY_USER (example :  admin)"
+  echo -e "\t ARTY_TOKEN (access token for the user)"
+  echo -e "==============================================================\n"
+  echo -e "Usage:\n\t $0 -i build_id -n build_number -t target_folder [-m module_id ] [-v]"
+  echo -e "==============================================================\n"
+  exit 2
+}
+
+checkVar() 
+{
+  for e in $1; do 
+    echo "[INFO] $e : ${!e}"
+    if [ "${!e}" == "" ]; then
+      echo "[ERROR] $e not set"
+      exit 1
+    fi
+  done
+}
+
+#####################################
+#### MAIN 		
+#####################################
+module_id="my_module"
+target_folder="release"
+
+source env.sh
+
+checkVar "ARTY_ID ARTY_URL ARTY_USER ARTY_TOKEN TARGET_REPO"
+
+while getopts 'hi:n:m:t:' c
+do
+  case $c in
+    i) build_id=$OPTARG ;;
+    n) build_number=$OPTARG ;;
+    m) module_id=$OPTARG ;;
+    t) target_folder=$OPTARG ;;
+    h) usage ;;
+  esac
+done
+
+checkVar "build_id build_number module_id"
+
+echo "[INFO] configuring JFrog CLI ..."
 jfrog rt c --interactive=false \
-  --url=http://${ARTY_HOST:-192.168.41.41}:${ARTY_PORT:-8081}/artifactory \
+  --url=$ARTY_URL \
   --user=$ARTY_USER \
   --access-token=$ARTY_TOKEN \
 $ARTY_ID
 
-jfrog rt pipi -r requirements.txt --trusted-host ${ARTY_HOST:-192.168.41.41} \
-  --build-name=$1 \
-  --build-number=$2 \
-  --module=$3
+echo "[INFO] pinging Artifactory ..."
+jfrog rt use $ARTY_ID
+jfrog rt curl api/system/ping
 
-python setup.py sdist bdist_wheel
+if [ $? -eq 0 ]; then 
+  echo -e "\n[INFO] ping OK !"
+else
+  echo -e "\n[ERROR] ping KO !!"
+  exit 1
+fi
 
-jfrog rt u dist/ $ARTY_MAIN_REPO/ \
-  --build-name=$1 \
-  --build-number=$2 \
-  --module=$3
 
-jfrog rt bce $1 $2
+arty_host=`echo "$ARTY_URL" | cut -d "/" -f3`
+echo "[INFO] arty_host : $arty_host!"
 
-jfrog rt bp $1 $2
+echo "[INFO] installing dependencies ..."
+echo "jfrog rt pipi -r requirements.txt --no-cache-dir --force-reinstall --trusted-host $arty_host"
+jfrog rt pipi -r requirements.txt --no-cache-dir --force-reinstall --trusted-host $arty_host \
+  --build-name=$build_id \
+  --build-number=$build_number \
+  --module=$module_id
+
+echo "[INFO] dependencies installed !"
+
+echo "[INFO] generating wheel package ..."
+python setup.py sdist bdist_wheel -d $target_folder 
+echo "[INFO] wheel package generated ! "
+
+echo "[INFO] uploading wheel package to Artifactory ... "
+jfrog rt u $target_folder/ $TARGET_REPO/ \
+  --build-name=$build_id \
+  --build-number=$build_number \
+  --module=$module_id
+echo "[INFO] wheel package uploaded !"
+
+jfrog rt bce $build_id $build_number
+
+jfrog rt bp $build_id $build_number
 

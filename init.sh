@@ -1,15 +1,38 @@
-#!/bin/sh
+#!/bin/bash
 
-YAML_PATH=.jfrog/projects
+usage()
+{
+  echo "=============================================================="
+  echo -e "Usage:\n\t $0 -r target_repo -n arty_id [-p yaml_path]"
+  echo "=============================================================="
+  exit 2
+}
+yaml_path=.jfrog/projects
 
-mkdir -p $YAML_PATH 
-cat <<EOF > $YAML_PATH/pip.yaml
+while getopts 'hr:s:p:' c
+do
+  case $c in
+    p) yaml_path=$OPTARG/projects ;;
+    r) target_repo=$OPTARG ;;
+    s) arty_id=$OPTARG ;;
+    h) usage ;;
+  esac
+done
+
+mkdir -p $yaml_path 
+echo "[INFO] $yaml_path generated !"
+
+cat <<EOF > $yaml_path/pip.yaml
 version: 1
 type: pip
 resolver:
-  repo: $1
-  serverId: $2 
+  repo: $target_repo
+  serverId: $arty_id
 EOF
                     
-cat $YAML_PATH/pip.yaml
+cat $yaml_path/pip.yaml
+echo "[INFO] $yaml_path/pip.yaml generated !"
 
+echo "export TARGET_REPO=$target_repo ARTY_ID=$arty_id" > env.sh
+
+echo "[INFO] TARGET_REPO and ARTY_ID exported as env variables "
