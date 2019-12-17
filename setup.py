@@ -8,5 +8,5 @@ setup(name='displayjson',
       author_email='cyan21@example.com',
       license='MIT',
       packages=['displayjson'],
-      install_requires=["simplejson",],
+      install_requires=["simplejson"],
       zip_safe=False)

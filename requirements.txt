@@ -1,2 +1,4 @@
-simplejson==3.13.2
-argparse
+simplejson>=3.17.0
+requests<=2.3.0
+pyyaml<=3.13
+fire==0.2.0
