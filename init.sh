@@ -33,6 +33,3 @@ EOF
 cat $yaml_path/pip.yaml
 echo "[INFO] $yaml_path/pip.yaml generated !"
 
-echo "export TARGET_REPO=$target_repo ARTY_ID=$arty_id" > env.sh
-
-echo "[INFO] TARGET_REPO and ARTY_ID exported as env variables "

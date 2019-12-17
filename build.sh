@@ -8,7 +8,7 @@ usage()
   echo -e "\t ARTY_USER (example :  admin)"
   echo -e "\t ARTY_TOKEN (access token for the user)"
   echo -e "==============================================================\n"
-  echo -e "Usage:\n\t $0 -i build_id -n build_number -t target_folder [-m module_id ] [-v]"
+  echo -e "Usage:\n\t $0 -i build_id -n build_number -t target_folder -r target_repo -a arty_id [-m module_id ] [-v]"
   echo -e "==============================================================\n"
   exit 2
 }
@@ -30,32 +30,34 @@ checkVar()
 module_id="my_module"
 target_folder="release"
 
-source env.sh
+#source env.sh
 
-checkVar "ARTY_ID ARTY_URL ARTY_USER ARTY_TOKEN TARGET_REPO"
+checkVar "ARTY_URL ARTY_USER ARTY_TOKEN"
 
-while getopts 'hi:n:m:t:' c
+while getopts 'ha:i:n:m:r:t:' c
 do
   case $c in
+    a) arty_id=$OPTARG ;;
     i) build_id=$OPTARG ;;
     n) build_number=$OPTARG ;;
     m) module_id=$OPTARG ;;
     t) target_folder=$OPTARG ;;
+    r) target_repo=$OPTARG ;;
     h) usage ;;
   esac
 done
 
-checkVar "build_id build_number module_id"
+checkVar "build_id build_number module_id target_repo arty_id"
 
 echo "[INFO] configuring JFrog CLI ..."
 jfrog rt c --interactive=false \
   --url=$ARTY_URL \
   --user=$ARTY_USER \
   --access-token=$ARTY_TOKEN \
-$ARTY_ID
+$arty_id
 
 echo "[INFO] pinging Artifactory ..."
-jfrog rt use $ARTY_ID
+jfrog rt use $arty_id
 jfrog rt curl api/system/ping
 
 if [ $? -eq 0 ]; then 
@@ -83,7 +85,7 @@ python setup.py sdist bdist_wheel -d $target_folder
 echo "[INFO] wheel package generated ! "
 
 echo "[INFO] uploading wheel package to Artifactory ... "
-jfrog rt u $target_folder/ $TARGET_REPO/ \
+jfrog rt u $target_folder/ $target_repo/ \
   --build-name=$build_id \
   --build-number=$build_number \
   --module=$module_id
