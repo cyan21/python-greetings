@@ -6,7 +6,7 @@ usage()
   echo "This script requires the following environment variables :"
   echo -e "\t ARTY_URL (example :  http://192.168.41.41/artifactory)"
   echo -e "\t ARTY_USER (example :  admin)"
-  echo -e "\t ARTY_TOKEN (access token for the user)"
+  echo -e "\t ARTY_APIKEY"
   echo -e "==============================================================\n"
   echo -e "Usage:\n\t $0 -i build_id -n build_number -t target_folder -r target_repo -a arty_id [-m module_id ] [-v]"
   echo -e "==============================================================\n"
@@ -32,7 +32,7 @@ target_folder="release"
 
 #source env.sh
 
-checkVar "ARTY_URL ARTY_USER ARTY_TOKEN"
+checkVar "ARTY_URL ARTY_USER ARTY_APIKEY"
 
 while getopts 'ha:i:n:m:r:t:' c
 do
@@ -53,7 +53,7 @@ echo "[INFO] configuring JFrog CLI ..."
 jfrog rt c --interactive=false \
   --url=$ARTY_URL \
   --user=$ARTY_USER \
-  --access-token=$ARTY_TOKEN \
+  --apikey=$ARTY_APIKEY \
 $arty_id
 
 echo "[INFO] pinging Artifactory ..."
@@ -68,7 +68,7 @@ else
 fi
 
 
-arty_host=`echo "$ARTY_URL" | cut -d "/" -f3`
+arty_host=`echo "$ARTY_URL" | cut -d "/" -f3 | cut -d":" -f1`
 echo "[INFO] arty_host : $arty_host!"
 
 echo "[INFO] installing dependencies ..."
