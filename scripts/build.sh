@@ -92,6 +92,5 @@ jfrog rt u $target_folder/ $target_repo/ \
 echo "[INFO] wheel package uploaded !"
 
 jfrog rt bce $build_id $build_number
-
 jfrog rt bp $build_id $build_number
 
