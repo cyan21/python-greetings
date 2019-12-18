@@ -1,0 +1,140 @@
+pipeline {
+    
+    agent any
+    
+    environment {
+        PATH="/var/opt/miniconda3/bin:/usr/local/bin:$PATH"
+        ARTY_URL='http://192.168.41.41:8081/artifactory'
+        ARTY_USER='admin'
+        ARTY_APIKEY='AKCp5btpCwjQnQr3QSZv7XK7i7W7Yf1BXyzdXqsUKPePDHqYE3HLDPHdF9F7spexvso3sNJSN'
+        ARTY_MAIN_REPO="asgardian-pypi"
+        ARTY_ID="art6"
+/*
+        ARTY_URL='http://artifactory-eu.soleng-emea.jfrog.team/artifactory'
+        ARTY_USER='yannc@jfrog.com'
+        ARTY_APIKEY='AKCp5ccGJYKjT4Ssrs2G4ScEj7sWoh3dUQpZ6sWhaJVzD8ETeAn9nGCjwRHU46h1yQPKB1d1V'
+        ARTY_MAIN_REPO="yann-pip"
+        MODULE_NAME="asgardian-python"
+        ARTY_ID="art-eu"
+
+*/    
+        TARGET_FOLDER="release"
+    }
+
+    parameters {
+        string(name: 'MODULE_NAME', defaultValue: 'python-example', description: 'Build Info module name')
+//        string(name: 'PROMOTION_REPO', defaultValue: 'asgardian-pypi-int-local', description: 'target repo for promotion')
+        string(name: 'PROMOTION_REPO', defaultValue: 'yann-pip-int-local', description: 'target repo for promotion')
+        
+        booleanParam(name: 'CREATE_VIRTUALENV', defaultValue: false, description: 'Create python380 virtual env')
+        booleanParam(name: 'SCAN_BUILD', defaultValue: true, description: 'Xray scan')
+
+    }
+    
+    stages {
+        
+        stage('Create virtualenv') {
+            when { 
+                expression { return params.CREATE_VIRTUALENV } 
+            }
+            steps {
+                sh '''
+                    conda create -y -n python380 python=3.8.0
+                    conda init bash
+                '''
+            } 
+        }
+        
+        stage('Configure project') {
+            steps {
+                git credentialsId: 'cyan21', branch: 'master', url: 'https://github.com/cyan21/python-greetings.git'
+                
+                sh '''
+                    pip -V
+                    jfrog --version
+                    source activate python380 > /dev/null 2>&1
+                    chmod +x scripts/init.sh scripts/build.sh
+                    scripts/init.sh -r $ARTY_MAIN_REPO -s $ARTY_ID
+                '''
+            }
+        }
+        
+        stage('Build project') {
+            steps {
+                sh '''
+                    source activate python380 > /dev/null 2>&1
+
+                    echo "[INFO] configuring JFrog CLI ..."
+                    jfrog rt c --interactive=false \
+                      --url=$ARTY_URL \
+                      --user=$ARTY_USER \
+                      --apikey=$ARTY_APIKEY \
+                    $ARTY_ID
+                    
+                    echo "[INFO] pinging Artifactory ..."
+                    jfrog rt use $ARTY_ID
+
+                    arty_host=`echo "$ARTY_URL" | cut -d "/" -f3`
+                    echo "[INFO] arty_host : $arty_host"
+                    
+                    echo "[INFO] installing dependencies ..."
+                    echo "jfrog rt pipi -r requirements.txt --no-cache-dir --force-reinstall --trusted-host $arty_host"
+                    jfrog rt pipi -r requirements.txt --no-cache-dir --force-reinstall --trusted-host $arty_host \
+                      --build-name=$JOB_NAME \
+                      --build-number=$BUILD_ID \
+                      --module=$MODULE_NAME
+                    
+                    echo "[INFO] dependencies installed !"
+                    
+                    echo "[INFO] generating wheel package ..."
+                    python setup.py sdist bdist_wheel -d $TARGET_FOLDER
+                    echo "[INFO] wheel package generated ! "
+                '''
+            }
+        }
+
+        
+        stage('Unit tests') {
+            steps {
+                sh "echo Test project"
+            }    
+        }
+
+        stage('Publish package and Build Info') {
+            steps {
+                sh '''
+                    echo "[INFO] uploading wheel package to Artifactory ... "
+                    jfrog rt u $TARGET_FOLDER/ $ARTY_MAIN_REPO/ \
+                      --build-name=$JOB_NAME \
+                      --build-number=$BUILD_ID \
+                      --module=$MODULE_NAME
+                    echo "[INFO] wheel package uploaded !"
+                    
+                    jfrog rt bce $JOB_NAME $BUILD_ID
+                    jfrog rt bp $JOB_NAME $BUILD_ID
+                '''
+            }    
+        }
+        
+        stage ('Xray scan') {
+            when { 
+                expression { return params.SCAN_BUILD } 
+            }
+
+            steps {
+                sh "jfrog rt bs --fail=false $JOB_NAME $BUILD_ID"
+            }
+
+        }
+        
+        stage('Promote Build Info') {
+            steps {
+                echo "Performing promotion ..."
+                sh '''
+                    jfrog rt bpr --comment="passed Xray scan" $JOB_NAME $BUILD_ID $PROMOTION_REPO
+                '''
+            }    
+        }
+
+    } // end stages
+}       
