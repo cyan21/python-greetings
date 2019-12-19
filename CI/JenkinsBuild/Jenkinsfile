@@ -70,7 +70,7 @@ pipeline {
                     jfrog rt pipi -r requirements.txt --no-cache-dir --force-reinstall --trusted-host $arty_host \
                       --build-name=$JOB_NAME \
                       --build-number=$BUILD_ID \
-                      --module=$module_name
+                      --module=params.module_name
                     
                     echo "[INFO] dependencies installed !"
                     
@@ -95,7 +95,7 @@ pipeline {
                     jfrog rt u $TARGET_FOLDER/ $ARTY_MAIN_REPO/ \
                       --build-name=$JOB_NAME \
                       --build-number=$BUILD_ID \
-                      --module=$module_name
+                      --module=params.module_name
                     echo "[INFO] wheel package uploaded !"
                     
                     jfrog rt bce $JOB_NAME $BUILD_ID
