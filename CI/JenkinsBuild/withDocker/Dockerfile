@@ -6,7 +6,7 @@ ARG ARTY_USER
 ARG ARTY_APIKEY 
 ARG ARTY_ID
 
-WORKDIR /tmp/
+#WORKDIR /tmp/
 
 RUN apt-get install -y curl 
 
@@ -19,5 +19,5 @@ RUN jfrog rt use $ARTY_ID
 
 RUN chmod 777 -R /opt/conda/lib/python3.7/site-packages/
 
-CMD ["/bin/bash"]
+CMD ["/bin/bash", "-c", "jfrog rt c show"]
 
