@@ -18,7 +18,8 @@ RUN jfrog rt c --interactive=false --url=$ARTY_URL --user=$ARTY_USER --apikey=$A
 
 RUN jfrog rt use $ARTY_ID
 
-RUN chmod 777 -R /opt/conda/lib/python3.7/site-packages/
+# hack
+RUN chmod 777 -R /opt/conda/lib/python3.7/site-packages/ /opt/jfrog
 
 CMD ["/bin/bash", "-c", "jfrog rt c show"]
 
