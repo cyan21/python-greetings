@@ -1,12 +1,10 @@
 ## Build with Docker
 
-```
-docker build -t pip-build:0.0.1 . && docker run -ti --rm pip-build:0.0.1
-```
 
+ 
 ## Build without Docker
 
-use the Jenkinsfile
+use this Jenkinsfile
 
 > requirements : Artifactory PRO + JFrog CLI + miniconda3 installed in /var/opt/miniconda3/
 
