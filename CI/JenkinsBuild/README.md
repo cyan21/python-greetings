@@ -1,12 +1,15 @@
+> Edit the environment variables to your setup and run
+
 ## Build with Docker
 
+add the 'linux' label to your Jenkins node 
+use JenkinsFile in withDocker folder
 
- 
 ## Build without Docker
 
 use this Jenkinsfile
 
-> requirements : Artifactory PRO + JFrog CLI + miniconda3 installed in /var/opt/miniconda3/
+> pre installation : Artifactory PRO + JFrog CLI + miniconda3 in /var/opt/miniconda3/
 
 ### Install MiniConda3
 
