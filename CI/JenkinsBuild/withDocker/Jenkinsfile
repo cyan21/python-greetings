@@ -31,7 +31,7 @@ pipeline {
         }
 
         stage("Build package") {
-           agent { label params.agent dockerfile true args "--build-arg ${env.ARTY_URL} --build-arg ${env.ARTY_USER} --build-arg ${env.ARTY_APIKEY} --build-arg ${env.ARTY_ID}" }
+           agent { label params.agent dockerfile {args "--build-arg ${env.ARTY_URL} --build-arg ${env.ARTY_USER} --build-arg ${env.ARTY_APIKEY} --build-arg ${env.ARTY_ID}" }}
            steps {
                 sh '''
                     pip -V
@@ -49,7 +49,8 @@ pipeline {
             when { 
                 expression { return params.scan_build } 
             }
-            agent { label params.agent dockerfile true }
+//            agent { label params.agent dockerfile true }
+            agent { label params.agent dockerfile {args "--build-arg ${env.ARTY_URL} --build-arg ${env.ARTY_USER} --build-arg ${env.ARTY_APIKEY} --build-arg ${env.ARTY_ID}" }}
             steps {
                 sh "jfrog rt bs --fail=false $JOB_NAME $BUILD_ID"
             }
@@ -57,7 +58,8 @@ pipeline {
         }
         
         stage('Promote Build Info') {
-            agent { label params.agent dockerfile true }
+//            agent { label params.agent dockerfile true }
+            agent { label params.agent dockerfile {args "--build-arg ${env.ARTY_URL} --build-arg ${env.ARTY_USER} --build-arg ${env.ARTY_APIKEY} --build-arg ${env.ARTY_ID}" }}
             steps {
                 echo "Performing promotion ..."
                 
