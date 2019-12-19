@@ -32,7 +32,7 @@ target_folder="release"
 
 #source env.sh
 
-checkVar "ARTY_URL ARTY_USER ARTY_APIKEY"
+#checkVar "ARTY_URL ARTY_USER ARTY_APIKEY"
 
 while getopts 'ha:i:n:m:r:t:' c
 do
@@ -49,12 +49,12 @@ done
 
 checkVar "build_id build_number module_id target_repo arty_id"
 
-echo "[INFO] configuring JFrog CLI ..."
-jfrog rt c --interactive=false \
-  --url=$ARTY_URL \
-  --user=$ARTY_USER \
-  --apikey=$ARTY_APIKEY \
-$arty_id
+#echo "[INFO] configuring JFrog CLI ..."
+#jfrog rt c --interactive=false \
+#  --url=$ARTY_URL \
+#  --user=$ARTY_USER \
+#  --apikey=$ARTY_APIKEY \
+#$arty_id
 
 echo "[INFO] pinging Artifactory ..."
 jfrog rt use $arty_id
