@@ -8,14 +8,14 @@ pipeline {
         ARTY_USER='admin'
         ARTY_APIKEY='AKCp5btpCwjQnQr3QSZv7XK7i7W7Yf1BXyzdXqsUKPePDHqYE3HLDPHdF9F7spexvso3sNJSN'
         ARTY_MAIN_REPO="asgardian-pypi"
+        MODULE_NAME="python-example"
         ARTY_ID="art6"
         TARGET_FOLDER="release"
     }
 
     parameters {
-        string(name: 'MODULE_NAME', defaultValue: 'python-example', description: 'Build Info module name')
-        string(name: 'PROMOTION_REPO', defaultValue: 'asgardian-pypi-int-local', description: 'target repo for promotion')
-        booleanParam(name: 'SCAN_BUILD', defaultValue: false, description: 'Xray scan')
+        string(name: 'promotion_repo', defaultValue: 'asgardian-pypi-int-local', description: 'target repo for promotion')
+        booleanParam(name: 'scan_build', defaultValue: false, description: 'Xray scan')
         string(name: 'agent', defaultValue: 'linux', description: 'Jenkins agent name')
     }
     
@@ -26,7 +26,7 @@ pipeline {
            steps {
                 git credentialsId: 'cyan21', branch: 'master', url: 'https://github.com/cyan21/python-greetings.git'
                 
-                sh "cp CI/Jenkins/withDocker/Jenkinsfile . " 
+                sh "cp CI/JenkinsBuild/withDocker/Dockerfile . " 
            }
         }
 
@@ -39,7 +39,7 @@ pipeline {
                     sed -i "s/2.3.0/2.12.4/" requirements.txt
                     conda info
                     scripts/init.sh -r $ARTY_MAIN_REPO -s $ARTY_ID
-                    scripts/build.sh -i $JOB_NAME -n $BUILD_NUMBER -t release -r $ARTY_MAIN_REPO -a $ARTY_ID -m python-module
+                    scripts/build.sh -i $JOB_NAME -n $BUILD_NUMBER -t release -r $ARTY_MAIN_REPO -a $ARTY_ID -m $MODULE_NAME 
                 '''
 
             }
@@ -47,7 +47,7 @@ pipeline {
 
         stage ('Xray scan') {
             when { 
-                expression { return params.SCAN_BUILD } 
+                expression { return params.scan_build } 
             }
             agent { label params.agent dockerfile true }
             steps {
@@ -61,7 +61,7 @@ pipeline {
             steps {
                 echo "Performing promotion ..."
                 
-//                sh "jfrog rt bpr --comment='passed non regression tests' $JOB_NAME $BUILD_ID $PROMOTION_REPO"
+                sh "jfrog rt bpr --comment='passed non regression tests' $JOB_NAME $BUILD_ID ${params.promotion_repo}"
             }    
         }
 
