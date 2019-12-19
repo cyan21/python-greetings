@@ -13,11 +13,7 @@ RUN apt-get install -y curl
 RUN curl -fL https://getcli.jfrog.io | sh &&  chmod 755 jfrog &&  mv jfrog /usr/local/bin/
 
 RUN echo "$ARTY_URL"
-RUN jfrog rt c --interactive=false \
-  --url=$ARTY_URL \
-  --user=$ARTY_USER \
-  --apikey=$ARTY_APIKEY \
-$ARTY_ID
+RUN jfrog rt c --interactive=false --url=$ARTY_URL --user=$ARTY_USER --apikey=$ARTY_APIKEY $ARTY_ID
 
 RUN jfrog rt use $ARTY_ID
 

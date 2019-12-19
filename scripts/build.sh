@@ -33,6 +33,7 @@ target_folder="release"
 #source env.sh
 
 #checkVar "ARTY_URL ARTY_USER ARTY_APIKEY"
+checkVar "ARTY_URL"
 
 while getopts 'ha:i:n:m:r:t:' c
 do
