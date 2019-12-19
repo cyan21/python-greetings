@@ -15,14 +15,15 @@ WORKDIR /tmp/
 RUN apt-get install -y curl 
 
 RUN curl -fL https://getcli.jfrog.io | sh &&  chmod 755 jfrog &&  mv jfrog /usr/local/bin/
+RUN chmod 777 -R /opt/conda/lib/python3.7/site-packages/
 
-COPY scripts/build.sh scripts/init.sh *.py requirements.txt /tmp/
-COPY files/ /tmp/files/
-COPY displayjson/ /tmp/displayjson/
+#COPY scripts/build.sh scripts/init.sh *.py requirements.txt /tmp/
+#COPY files/ /tmp/files/
+#COPY displayjson/ /tmp/displayjson/
 
-RUN chmod u+x /tmp/build.sh /tmp/init.sh
+#RUN chmod u+x /tmp/build.sh /tmp/init.sh
 
-RUN /tmp/init.sh -r $ARTY_MAIN_REPO -s $ARTY_ID
+#RUN /tmp/init.sh -r $ARTY_MAIN_REPO -s $ARTY_ID
 
-ENTRYPOINT ["/bin/bash", "-c", "/tmp/build.sh -i $BUILD_NAME -n $BUILD_NUMBER -t release -r $ARTY_MAIN_REPO -a $ARTY_ID -m python-module"]
+#ENTRYPOINT ["/bin/bash", "-c", "/tmp/build.sh -i $BUILD_NAME -n $BUILD_NUMBER -t release -r $ARTY_MAIN_REPO -a $ARTY_ID -m python-module"]
 
