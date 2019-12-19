@@ -1,10 +1,10 @@
 FROM continuumio/miniconda3:4.7.12 
 LABEL maintainer="yannc@jfrog.com"
 
-ENV ARTY_URL
-ENV ARTY_USER
-ENV ARTY_APIKEY 
-ENV ARTY_ID
+ARG ARTY_URL
+ARG ARTY_USER
+ARG ARTY_APIKEY 
+ARG ARTY_ID
 
 WORKDIR /tmp/
 
@@ -12,6 +12,7 @@ RUN apt-get install -y curl
 
 RUN curl -fL https://getcli.jfrog.io | sh &&  chmod 755 jfrog &&  mv jfrog /usr/local/bin/
 
+RUN echo "$ARTY_URL"
 RUN jfrog rt c --interactive=false \
   --url=$ARTY_URL \
   --user=$ARTY_USER \
