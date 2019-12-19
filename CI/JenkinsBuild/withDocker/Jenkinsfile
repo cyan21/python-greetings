@@ -3,7 +3,7 @@ pipeline {
     agent none
     
     environment {
-        JFROG_CLI_HOME="/tmp/"
+        JFROG_CLI_HOME="~/"
         ARTY_URL='http://192.168.41.41:8081/artifactory'
         ARTY_USER='admin'
         ARTY_APIKEY='AKCp5btpCwjQnQr3QSZv7XK7i7W7Yf1BXyzdXqsUKPePDHqYE3HLDPHdF9F7spexvso3sNJSN'

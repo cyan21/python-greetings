@@ -58,6 +58,7 @@ checkVar "build_id build_number module_id target_repo arty_id"
 #$arty_id
 
 echo "[INFO] pinging Artifactory ..."
+jfrog rt c show
 jfrog rt use $arty_id
 jfrog rt curl api/system/ping
 
