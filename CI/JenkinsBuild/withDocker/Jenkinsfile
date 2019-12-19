@@ -26,13 +26,7 @@ pipeline {
            steps {
                 git credentialsId: 'cyan21', branch: 'master', url: 'https://github.com/cyan21/python-greetings.git'
                 
-                sh '''
-                    pip -V
-                    jfrog --version
-                    sed -i "s/2.3.0/2.12.4/" requirements.txt
-                    conda info
-                    cp CI/Jenkins/withDocker/Jenkinsfile . 
-                '''
+                sh "cp CI/Jenkins/withDocker/Jenkinsfile . " 
            }
         }
 
@@ -40,6 +34,10 @@ pipeline {
            agent { label params.agent dockerfile true }
            steps {
                 sh '''
+                    pip -V
+                    jfrog --version
+                    sed -i "s/2.3.0/2.12.4/" requirements.txt
+                    conda info
                     scripts/init.sh -r $ARTY_MAIN_REPO -s $ARTY_ID
                     scripts/build.sh -i $JOB_NAME -n $BUILD_NUMBER -t release -r $ARTY_MAIN_REPO -a $ARTY_ID -m python-module
                 '''
