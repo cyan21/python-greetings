@@ -51,10 +51,7 @@ pipeline {
             when { 
                 expression { return params.SCAN_BUILD } 
             }
-            agent {
-                label params.agent           
-                dockerfile true 
-            }
+            agent { label params.agent dockerfile true }
             steps {
                 sh "jfrog rt bs --fail=false $JOB_NAME $BUILD_ID"
             }
@@ -62,10 +59,7 @@ pipeline {
         }
         
         stage('Promote Build Info') {
-            agent {
-                label params.agent           
-                dockerfile true 
-            }
+            agent { label params.agent dockerfile true }
             steps {
                 echo "Performing promotion ..."
                 
