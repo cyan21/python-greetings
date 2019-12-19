@@ -40,7 +40,7 @@ pipeline {
                     pip -V
                     jfrog --version
                     sed -i "s/2.3.0/2.12.4/" requirements.txt
-                    echo $JFROG_CLI_HOME && ls -l /opt/jfrog/*
+                    echo $JFROG_CLI_HOME 
                     conda info
                     scripts/init.sh -r $ARTY_MAIN_REPO -s $ARTY_ID
                     scripts/build.sh -i $JOB_NAME -n $BUILD_NUMBER -t release -r $ARTY_MAIN_REPO -a $ARTY_ID -m $MODULE_NAME 
