@@ -1,8 +1,6 @@
 pipeline {
     
-    agent {
-        dockerfile true 
-    }
+    agent none
     
     environment {
         JFROG_CLI_HOME="/tmp/"
@@ -50,8 +48,6 @@ pipeline {
                     scripts/init.sh -r $ARTY_MAIN_REPO -s $ARTY_ID
                     scripts/build.sh -i $JOB_NAME -n $BUILD_NUMBER -t release -r $ARTY_MAIN_REPO -a $ARTY_ID -m python-module
                 '''
-/*
-*/
 
             }
         }
