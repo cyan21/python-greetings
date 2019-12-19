@@ -9,26 +9,14 @@ pipeline {
         ARTY_APIKEY='AKCp5btpCwjQnQr3QSZv7XK7i7W7Yf1BXyzdXqsUKPePDHqYE3HLDPHdF9F7spexvso3sNJSN'
         ARTY_MAIN_REPO="asgardian-pypi"
         ARTY_ID="art6"
-/*
-        ARTY_URL='http://artifactory-eu.soleng-emea.jfrog.team/artifactory'
-        ARTY_USER='yannc@jfrog.com'
-        ARTY_APIKEY='AKCp5ccGJYKjT4Ssrs2G4ScEj7sWoh3dUQpZ6sWhaJVzD8ETeAn9nGCjwRHU46h1yQPKB1d1V'
-        ARTY_MAIN_REPO="yann-pip"
-        module_name="asgardian-python"
-        ARTY_ID="art-eu"
-
-*/    
         TARGET_FOLDER="release"
     }
 
     parameters {
         string(name: 'module_name', defaultValue: 'python-example', description: 'Build Info module name')
-//        string(name: 'promotion_repo', defaultValue: 'asgardian-pypi-int-local', description: 'target repo for promotion')
-        string(name: 'promotion_repo', defaultValue: 'yann-pip-int-local', description: 'target repo for promotion')
-        
+        string(name: 'promotion_repo', defaultValue: 'asgardian-pypi-int-local', description: 'target repo for promotion')
         booleanParam(name: 'create_virtualenv', defaultValue: false, description: 'Create python380 virtual env')
         booleanParam(name: 'scan_build', defaultValue: true, description: 'Xray scan')
-
     }
     
     stages {
