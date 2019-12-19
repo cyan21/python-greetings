@@ -31,7 +31,12 @@ pipeline {
         }
 
         stage("Build package") {
-           agent { label params.agent dockerfile {args "--build-arg ${env.ARTY_URL} --build-arg ${env.ARTY_USER} --build-arg ${env.ARTY_APIKEY} --build-arg ${env.ARTY_ID}" }}
+           agent { 
+               label params.agent 
+               dockerfile {
+                   additionalBuildArgs  "--build-arg ARTY_URL=${env.ARTY_URL} --build-arg ARTY_USER=${env.ARTY_USER} --build-arg ARTY_APIKEY=${env.ARTY_APIKEY} --build-arg ARTY_ID=${env.ARTY_ID}" 
+               }
+           }
            steps {
                 sh '''
                     pip -V
