@@ -3,7 +3,7 @@ pipeline {
     agent none
     
     environment {
-        JFROG_CLI_HOME="~/"
+        JFROG_CLI_HOME="/opt/jfrog"
         ARTY_URL='http://192.168.41.41:8081/artifactory'
         ARTY_USER='admin'
         ARTY_APIKEY='AKCp5btpCwjQnQr3QSZv7XK7i7W7Yf1BXyzdXqsUKPePDHqYE3HLDPHdF9F7spexvso3sNJSN'
@@ -40,6 +40,7 @@ pipeline {
                     pip -V
                     jfrog --version
                     sed -i "s/2.3.0/2.12.4/" requirements.txt
+                    echo $JFROG_CLI_HOME && ls -l /opt/jfrog/*
                     conda info
                     scripts/init.sh -r $ARTY_MAIN_REPO -s $ARTY_ID
                     scripts/build.sh -i $JOB_NAME -n $BUILD_NUMBER -t release -r $ARTY_MAIN_REPO -a $ARTY_ID -m $MODULE_NAME 
