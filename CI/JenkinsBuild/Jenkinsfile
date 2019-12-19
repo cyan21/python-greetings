@@ -14,7 +14,7 @@ pipeline {
         ARTY_USER='yannc@jfrog.com'
         ARTY_APIKEY='AKCp5ccGJYKjT4Ssrs2G4ScEj7sWoh3dUQpZ6sWhaJVzD8ETeAn9nGCjwRHU46h1yQPKB1d1V'
         ARTY_MAIN_REPO="yann-pip"
-        MODULE_NAME="asgardian-python"
+        module_name="asgardian-python"
         ARTY_ID="art-eu"
 
 */    
@@ -22,12 +22,12 @@ pipeline {
     }
 
     parameters {
-        string(name: 'MODULE_NAME', defaultValue: 'python-example', description: 'Build Info module name')
-//        string(name: 'PROMOTION_REPO', defaultValue: 'asgardian-pypi-int-local', description: 'target repo for promotion')
-        string(name: 'PROMOTION_REPO', defaultValue: 'yann-pip-int-local', description: 'target repo for promotion')
+        string(name: 'module_name', defaultValue: 'python-example', description: 'Build Info module name')
+//        string(name: 'promotion_repo', defaultValue: 'asgardian-pypi-int-local', description: 'target repo for promotion')
+        string(name: 'promotion_repo', defaultValue: 'yann-pip-int-local', description: 'target repo for promotion')
         
-        booleanParam(name: 'CREATE_VIRTUALENV', defaultValue: false, description: 'Create python380 virtual env')
-        booleanParam(name: 'SCAN_BUILD', defaultValue: true, description: 'Xray scan')
+        booleanParam(name: 'create_virtualenv', defaultValue: false, description: 'Create python380 virtual env')
+        booleanParam(name: 'scan_build', defaultValue: true, description: 'Xray scan')
 
     }
     
@@ -35,7 +35,7 @@ pipeline {
         
         stage('Create virtualenv') {
             when { 
-                expression { return params.CREATE_VIRTUALENV } 
+                expression { return params.create_virtualenv } 
             }
             steps {
                 sh '''
@@ -82,7 +82,7 @@ pipeline {
                     jfrog rt pipi -r requirements.txt --no-cache-dir --force-reinstall --trusted-host $arty_host \
                       --build-name=$JOB_NAME \
                       --build-number=$BUILD_ID \
-                      --module=$MODULE_NAME
+                      --module=$module_name
                     
                     echo "[INFO] dependencies installed !"
                     
@@ -107,7 +107,7 @@ pipeline {
                     jfrog rt u $TARGET_FOLDER/ $ARTY_MAIN_REPO/ \
                       --build-name=$JOB_NAME \
                       --build-number=$BUILD_ID \
-                      --module=$MODULE_NAME
+                      --module=$module_name
                     echo "[INFO] wheel package uploaded !"
                     
                     jfrog rt bce $JOB_NAME $BUILD_ID
@@ -118,7 +118,7 @@ pipeline {
         
         stage ('Xray scan') {
             when { 
-                expression { return params.SCAN_BUILD } 
+                expression { return params.scan_build } 
             }
 
             steps {
@@ -131,7 +131,7 @@ pipeline {
             steps {
                 echo "Performing promotion ..."
                 sh '''
-                    jfrog rt bpr --comment="passed Xray scan" $JOB_NAME $BUILD_ID $PROMOTION_REPO
+                    jfrog rt bpr --comment="passed Xray scan" $JOB_NAME $BUILD_ID $promotion_repo
                 '''
             }    
         }
