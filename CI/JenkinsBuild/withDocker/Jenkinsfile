@@ -22,9 +22,7 @@ pipeline {
     stages {
         
         stage("Config env") {
-           agent {
-                label params.agent           
-           }
+           agent { label params.agent }
            steps {
                 git credentialsId: 'cyan21', branch: 'master', url: 'https://github.com/cyan21/python-greetings.git'
                 
@@ -39,10 +37,7 @@ pipeline {
         }
 
         stage("Build package") {
-           agent {
-                label params.agent           
-                dockerfile true 
-           }
+           agent { label params.agent dockerfile true }
            steps {
                 sh '''
                     scripts/init.sh -r $ARTY_MAIN_REPO -s $ARTY_ID
