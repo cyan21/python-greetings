@@ -5,8 +5,8 @@ pipeline {
     environment {
         JFROG_CLI_HOME="/opt/jfrog"
         ARTY_URL='http://192.168.41.41:8081/artifactory'
-        ARTY_USER='admin'
-        ARTY_APIKEY='AKCp5btpCwjQnQr3QSZv7XK7i7W7Yf1BXyzdXqsUKPePDHqYE3HLDPHdF9F7spexvso3sNJSN'
+        ARTY_USER='<CHANGE_ME>'
+        ARTY_APIKEY='<CHANGE_ME>'
         ARTY_MAIN_REPO="asgardian-pypi"
         MODULE_NAME="python-example"
         ARTY_ID="art6"
@@ -71,7 +71,7 @@ pipeline {
             steps {
                 echo "Performing promotion ..."
                 
-                sh "jfrog rt bpr --comment='passed non regression tests' $JOB_NAME $BUILD_ID ${params.promotion_repo}"
+                sh "jfrog rt bpr --status="Release" --comment='passed non regression tests' $JOB_NAME $BUILD_ID ${params.promotion_repo}"
             }    
         }
 

@@ -5,8 +5,8 @@ pipeline {
     environment {
         PATH="/var/opt/miniconda3/bin:/usr/local/bin:$PATH"
         ARTY_URL='http://192.168.41.41:8081/artifactory'
-        ARTY_USER='admin'
-        ARTY_APIKEY='AKCp5btpCwjQnQr3QSZv7XK7i7W7Yf1BXyzdXqsUKPePDHqYE3HLDPHdF9F7spexvso3sNJSN'
+        ARTY_USER='<CHANGE_ME>'
+        ARTY_APIKEY='<CHANGE_ME>'
         ARTY_MAIN_REPO="asgardian-pypi"
         ARTY_ID="art6"
         TARGET_FOLDER="release"
@@ -119,7 +119,7 @@ pipeline {
             steps {
                 echo "Performing promotion ..."
                 sh '''
-                    jfrog rt bpr --comment="passed Xray scan" $JOB_NAME $BUILD_ID $promotion_repo
+                    jfrog rt bpr --status="Release" --comment="passed Xray scan" $JOB_NAME $BUILD_ID $promotion_repo
                 '''
             }    
         }
