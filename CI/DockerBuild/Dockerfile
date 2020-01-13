@@ -1,14 +1,20 @@
 FROM continuumio/miniconda3:4.7.12 
 LABEL maintainer="yannc@jfrog.com"
 
-ENV BUILD_NAME='test_python'
-ENV BUILD_NUMBER=2
+ARG ARTY_URL
+ARG ARTY_USER
+ARG ARTY_APIKEY
 
-ENV ARTY_URL='http://192.168.41.41:8081/artifactory'
-ENV ARTY_USER='admin'
-ENV ARTY_APIKEY='AKCp5btpCwjQnQr3QSZv7XK7i7W7Yf1BXyzdXqsUKPePDHqYE3HLDPHdF9F7spexvso3sNJSN'
-ENV ARTY_MAIN_REPO='asgardian-pypi'
-ENV ARTY_ID='art6'
+ARG BUILD_NAME='test_python'
+ARG BUILD_NUMBER=2
+ARG ARTY_MAIN_REPO='asgardian-pypi'
+
+ENV B_NAME=$BUILD_NAME
+ENV B_NUMBER=$BUILD_NUMBER
+ENV URL=ARTY_URL
+ENV ARTY_ID='art'
+ENV JFROG_CLI_OFFER_CONFIG=false
+
 
 WORKDIR /tmp
 
@@ -18,7 +24,7 @@ RUN curl -fL https://getcli.jfrog.io | sh &&  chmod 755 jfrog &&  mv jfrog /usr/
 
 RUN jfrog rt c --interactive=false --url=$ARTY_URL --user=$ARTY_USER --apikey=$ARTY_APIKEY $ARTY_ID
 
-RUN git clone https://github.com/cyan21/python-greetings.git && pwd && ls -l
+RUN git clone https://github.com/cyan21/python-greetings.git 
 
 WORKDIR /tmp/python-greetings
 
@@ -26,4 +32,4 @@ RUN chmod u+x scripts/build.sh scripts/init.sh
 
 RUN scripts/init.sh -r $ARTY_MAIN_REPO -s $ARTY_ID
 
-ENTRYPOINT ["/bin/bash", "-c", "scripts/build.sh -i $BUILD_NAME -n $BUILD_NUMBER -t release -r $ARTY_MAIN_REPO -a $ARTY_ID -m python-module"]
+ENTRYPOINT ["/bin/bash", "-c", "scripts/build.sh -i $B_NAME -n $B_NUMBER -t release -r $ARTY_MAIN_REPO -a $ARTY_ID -s $ARTY_URL -m python-module"]

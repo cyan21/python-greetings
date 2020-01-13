@@ -27,7 +27,7 @@ target_folder="release"
 
 #checkVar "ARTY_URL ARTY_USER ARTY_APIKEY"
 
-while getopts 'ha:i:n:m:r:t:' c
+while getopts 'ha:i:n:m:r:t:s:' c
 do
   case $c in
     a) arty_id=$OPTARG ;;
@@ -36,7 +36,7 @@ do
     m) module_id=$OPTARG ;;
     t) target_folder=$OPTARG ;;
     r) target_repo=$OPTARG ;;
-    s) secured_host=$OPTARG ;;
+    s) arty_host=`echo "$OPTARG" | cut -d "/" -f3 | cut -d":" -f1` ;;
     h) usage ;;
   esac
 done
@@ -63,7 +63,6 @@ else
 fi
 
 
-arty_host=`echo "$secured_host" | cut -d "/" -f3 | cut -d":" -f1`
 echo "[INFO] arty_host : $arty_host!"
 
 echo "[INFO] installing dependencies ..."
