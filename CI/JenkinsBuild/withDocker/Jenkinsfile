@@ -5,16 +5,17 @@ pipeline {
     environment {
         JFROG_CLI_HOME="/opt/jfrog"
         ARTY_URL='http://192.168.41.41:8081/artifactory'
-        ARTY_USER='<CHANGE_ME>'
-        ARTY_APIKEY='<CHANGE_ME>'
+        ARTY_CREDS=credentials('art_apikey')
         ARTY_MAIN_REPO="asgardian-pypi"
         MODULE_NAME="python-example"
-        ARTY_ID="art6"
+        ARTY_ID="art"
         TARGET_FOLDER="release"
+        REPOSITORY_TYPE="conda"
+        PROJECT_NAME="eva"
+        DRY_RUN="false"
     }
 
     parameters {
-        string(name: 'promotion_repo', defaultValue: 'asgardian-pypi-int-local', description: 'target repo for promotion')
         booleanParam(name: 'scan_build', defaultValue: false, description: 'Xray scan')
         string(name: 'agent', defaultValue: 'linux', description: 'Jenkins agent name')
     }
@@ -32,7 +33,7 @@ pipeline {
 
         stage("Build package") {
            agent { label params.agent dockerfile {
-                   additionalBuildArgs  "--build-arg ARTY_URL=${env.ARTY_URL} --build-arg ARTY_USER=${env.ARTY_USER} --build-arg ARTY_APIKEY=${env.ARTY_APIKEY} --build-arg ARTY_ID=${env.ARTY_ID}" 
+                   additionalBuildArgs  "--build-arg ARTY_URL=${env.ARTY_URL} --build-arg ARTY_USER=${ARTY_CREDS_USR} --build-arg ARTY_APIKEY=${ARTY_CREDS_PSW} --build-arg ARTY_ID=${env.ARTY_ID}" 
                }
            }
            steps {
@@ -53,10 +54,7 @@ pipeline {
            when { 
                expression { return params.scan_build } 
            }
-           agent { label params.agent dockerfile {
-                   additionalBuildArgs  "--build-arg ARTY_URL=${env.ARTY_URL} --build-arg ARTY_USER=${env.ARTY_USER} --build-arg ARTY_APIKEY=${env.ARTY_APIKEY} --build-arg ARTY_ID=${env.ARTY_ID}" 
-               }
-           }
+           agent { label "jfrog_cli" }
            steps {
                sh "jfrog rt bs --fail=false $JOB_NAME $BUILD_ID"
            }
@@ -64,14 +62,11 @@ pipeline {
        }
         
         stage('Promote Build Info') {
-           agent { label params.agent dockerfile {
-                   additionalBuildArgs  "--build-arg ARTY_URL=${env.ARTY_URL} --build-arg ARTY_USER=${env.ARTY_USER} --build-arg ARTY_APIKEY=${env.ARTY_APIKEY} --build-arg ARTY_ID=${env.ARTY_ID}" 
-               }
-           }
+            agent { label "jfrog_cli" }
             steps {
-                echo "Performing promotion ..."
-                
-                sh "jfrog rt bpr --status="Release" --comment='passed non regression tests' $JOB_NAME $BUILD_ID ${params.promotion_repo}"
+                withEnv(["PATH+EXTRA=${jfrog_cli_path}"]) {  
+                    sh "jfrog rt bpr --status="Release" --comment='passed non regression tests' $JOB_NAME $BUILD_ID ${PROJECT_NAME}-${REPOSITORY_TYPE}-uat-local"
+                }
             }    
         }
 
