@@ -32,4 +32,4 @@ RUN chmod u+x scripts/build.sh scripts/init.sh
 
 RUN scripts/init.sh -r $ARTY_MAIN_REPO -s $ARTY_ID
 
-ENTRYPOINT ["bin/bash", "-c", "scripts/build.sh", "-i", "$B_NAME", "-n", "$B_NUMBER", "-t", "release", "-r", "$ARTY_MAIN_REPO", "-a", "$ARTY_ID", "-s", $URL, "-m", "python-module"]
+ENTRYPOINT ["/bin/bash", "-c", "scripts/build.sh -i $B_NAME -n $B_NUMBER -t release -r $ARTY_MAIN_REPO -a $ARTY_ID -s $URL -m python-module"]
