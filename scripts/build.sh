@@ -49,6 +49,13 @@ done
 #  --user=$ARTY_USER \
 #  --apikey=$ARTY_APIKEY \
 #$arty_id
+echo "arty_id = $arty_id"
+echo "build_id = $build_id"
+echo "build_number = $build_number"
+echo "module_id = $module_id"
+echo "target_folder = $target_folder"
+echo "target_repo = $target_repo"
+echo "arty_host = $arty_host"
 
 echo "[INFO] pinging Artifactory ($arty_id)..."
 jfrog rt c show
