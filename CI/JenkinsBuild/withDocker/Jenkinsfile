@@ -12,8 +12,8 @@ pipeline {
         MODULE_NAME="python-example"
         ARTY_ID="art"
         TARGET_FOLDER="release"
-        REPOSITORY_TYPE="conda"
-        PROJECT_NAME="eva"
+        REPOSITORY_TYPE="pypi"
+        PROJECT_NAME="asgardian"
         DRY_RUN="false"
     }
 
@@ -46,7 +46,7 @@ pipeline {
                     echo $JFROG_CLI_HOME 
                     conda info
                     scripts/init.sh -r $ARTY_MAIN_REPO -s $ARTY_ID
-                    scripts/build.sh -i $JOB_NAME -n $BUILD_NUMBER -t release -r $ARTY_MAIN_REPO -a $ARTY_ID -m $MODULE_NAME 
+                    scripts/build.sh -i $JOB_NAME -n $BUILD_NUMBER -t release -r $ARTY_MAIN_REPO -a $ARTY_ID -m $MODULE_NAME -s $ARTY_URL 
                 '''
 
             }
@@ -58,7 +58,7 @@ pipeline {
            }
            agent { label "jfrog_cli" }
            steps {
-               sh "jfrog rt bs --fail=false $JOB_NAME $BUILD_ID"
+               sh "jfrog rt bs --url=${ARTY_URL} --user=${ARTY_CREDS_USR} --apikey=${ARTY_CREDS_PSW} --fail=false $JOB_NAME $BUILD_ID"
            }
 
        }
@@ -67,7 +67,7 @@ pipeline {
             agent { label "jfrog_cli" }
             steps {
                 withEnv(["PATH+EXTRA=${jfrog_cli_path}"]) {  
-                    sh "jfrog rt bpr --status="Release" --comment='passed non regression tests' $JOB_NAME $BUILD_ID ${PROJECT_NAME}-${REPOSITORY_TYPE}-uat-local"
+                    sh "jfrog rt bpr --url=${ARTY_URL} --user=${ARTY_CREDS_USR} --apikey=${ARTY_CREDS_PSW} --status='Release' --comment='passed non regression tests' $JOB_NAME $BUILD_ID ${PROJECT_NAME}-${REPOSITORY_TYPE}-uat-local"
                 }
             }    
         }
