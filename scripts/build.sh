@@ -33,7 +33,7 @@ target_folder="release"
 #source env.sh
 
 #checkVar "ARTY_URL ARTY_USER ARTY_APIKEY"
-checkVar "ARTY_URL"
+#checkVar "ARTY_URL"
 
 while getopts 'ha:i:n:m:r:t:' c
 do
@@ -48,7 +48,7 @@ do
   esac
 done
 
-checkVar "build_id build_number module_id target_repo arty_id"
+#checkVar "build_id build_number module_id target_repo arty_id"
 
 #echo "[INFO] configuring JFrog CLI ..."
 #jfrog rt c --interactive=false \
