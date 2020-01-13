@@ -6,6 +6,7 @@ ARG ARTY_USER
 ARG ARTY_APIKEY 
 ARG ARTY_ID
 ENV JFROG_CLI_HOME=/opt/jfrog 
+ENV JFROG_CLI_OFFER_CONFIG=false
 
 RUN mkdir /opt/jfrog
 WORKDIR /opt/jfrog
