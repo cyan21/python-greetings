@@ -11,7 +11,7 @@ ARG ARTY_MAIN_REPO='asgardian-pypi'
 
 ENV B_NAME=$BUILD_NAME
 ENV B_NUMBER=$BUILD_NUMBER
-ENV URL=ARTY_URL
+ENV URL=$ARTY_URL
 ENV ARTY_ID='art'
 ENV JFROG_CLI_OFFER_CONFIG=false
 
@@ -32,4 +32,4 @@ RUN chmod u+x scripts/build.sh scripts/init.sh
 
 RUN scripts/init.sh -r $ARTY_MAIN_REPO -s $ARTY_ID
 
-ENTRYPOINT ["/bin/bash", "-c", "scripts/build.sh -i $B_NAME -n $B_NUMBER -t release -r $ARTY_MAIN_REPO -a $ARTY_ID -s $ARTY_URL -m python-module"]
+ENTRYPOINT ["scripts/build.sh", "-i", "$B_NAME", "-n", "$B_NUMBER", "-t", "release", "-r", "$ARTY_MAIN_REPO", "-a", "$ARTY_ID", "-s", "$ARTY_URL", "-m", "python-module"]
