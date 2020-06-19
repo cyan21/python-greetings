@@ -32,8 +32,10 @@ jobs:
           JF_ARTIFACTORY_SERVER: ${{ secrets.JF_ARTIFACTORY_SERVER_1 }}
 
       - name: Ping Artifactory
-        run: jfrog rt ping
-
+        run: |
+            jfrog rt ping
+            jfrog rt c show
+            
       - name: Configure CLI  
         run: jfrog rt pipc --repo-resolve asgardian-python
 
