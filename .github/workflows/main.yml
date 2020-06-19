@@ -42,16 +42,15 @@ jobs:
       - name: Configure CLI  
         run: jfrog rt pipc --repo-resolve asgardian-python --server-id-resolve yannaws
 
-      - name: Build 
-        run: jfrog rt pipi -r requirements.txt --no-cache-dir --force-reinstall --build-name=$JFROG_CLI_BUILD_NAME --build-number=$JFROG_CLI_BUILD_NUMBER --module=demo 
+      - name: Build & Package
+        run:  |
+          jfrog rt pipi -r requirements.txt --no-cache-dir --force-reinstall --build-name=$JFROG_CLI_BUILD_NAME --build-number=$JFROG_CLI_BUILD_NUMBER --module=demo 
+          python setup.py sdist bdist_wheel -d build/ 
 
-      - name: Package
-        run: python setup.py sdist bdist_wheel -d build/ 
-
-      - name: Upload package
+      - name: Publish artifact
         run: jfrog rt u build/ asgardian-python/ --build-name=$JFROG_CLI_BUILD_NAME --build-number=$JFROG_CLI_BUILD_NUMBER --module=demo
         
-      - name: Publish Build Information
+      - name: Publish Build Info
         run: |
             # Collect environment variables for the build
             jfrog rt bce $JFROG_CLI_BUILD_NAME $JFROG_CLI_BUILD_NUMBER
@@ -61,3 +60,6 @@ jobs:
             
             # Publish build info
             jfrog rt bp $JFROG_CLI_BUILD_NAME $JFROG_CLI_BUILD_NUMBER
+
+      - name: Scan Build Info
+        run: jfrog rt bs $JFROG_CLI_BUILD_NAME $JFROG_CLI_BUILD_NUMBER
