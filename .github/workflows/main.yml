@@ -31,6 +31,9 @@ jobs:
         env:
           JF_ARTIFACTORY_SERVER: ${{ secrets.JF_ARTIFACTORY_SERVER_1 }}
 
+      - name: Install wheel
+        run: pip install wheel
+
       - name: Ping Artifactory
         run: |
             jfrog rt ping
