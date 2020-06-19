@@ -40,7 +40,7 @@ jobs:
         run: jfrog rt pipc --repo-resolve asgardian-python --server-id-resolve yannaws_cyan21
 
       - name: Build 
-        run: jfrog pipi -r requirements.txt --no-cache-dir --force-reinstall --build-name=$JFROG_CLI_BUILD_NAME --build-name=$JFROG_CLI_BUILD_NUMBER --module=demo 
+        run: jfrog rt pipi -r requirements.txt --no-cache-dir --force-reinstall --build-name=$JFROG_CLI_BUILD_NAME --build-name=$JFROG_CLI_BUILD_NUMBER --module=demo 
 
       - name: Package
         run: python setup.py sdist bdist_wheel -d build/ 
@@ -52,7 +52,9 @@ jobs:
         run: |
             # Collect environment variables for the build
             jfrog rt bce $JFROG_CLI_BUILD_NAME $JFROG_CLI_BUILD_NUMBER
+            
             # Collect VCS details from git and add them to the build
             jfrog rt bag $JFROG_CLI_BUILD_NAME $JFROG_CLI_BUILD_NUMBER
+            
             # Publish build info
             jfrog rt bp $JFROG_CLI_BUILD_NAME $JFROG_CLI_BUILD_NUMBER
