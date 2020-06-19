@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: CI
+name: python-githubaction
 
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the master branch
@@ -34,20 +34,23 @@ jobs:
       - name: Ping Artifactory
         run: jfrog rt ping
 
+      - name: Configure CLI  
+        run: jfrog rt pipc --repo-resolve asgardian-python
+
       - name: Build 
-        run: jfrog pipi -r requirements.txt --no-cache-dir --force-reinstall  --build-name=action_python --build-name=1 --module=demo 
+        run: jfrog pipi -r requirements.txt --no-cache-dir --force-reinstall --build-name=$JFROG_CLI_BUILD_NAME --build-name=$JFROG_CLI_BUILD_NUMBER --module=demo 
 
       - name: Package
         run: python setup.py sdist bdist_wheel -d build/ 
 
       - name: Upload package
-        run: jfrog rt u build/ $ --build-name=action_python --build-name=1 --module=demo
+        run: jfrog rt u build/ asgardian-python/ --build-name=$JFROG_CLI_BUILD_NAME --build-name=$JFROG_CLI_BUILD_NUMBER --module=demo
         
       - name: Publish Build Information
         run: |
             # Collect environment variables for the build
-            jfrog rt bce action_python 1
+            jfrog rt bce $JFROG_CLI_BUILD_NAME $JFROG_CLI_BUILD_NUMBER
             # Collect VCS details from git and add them to the build
-            jfrog rt bag action_python 1
+            jfrog rt bag $JFROG_CLI_BUILD_NAME $JFROG_CLI_BUILD_NUMBER
             # Publish build info
-            jfrog rt bp action_python
+            jfrog rt bp $JFROG_CLI_BUILD_NAME $JFROG_CLI_BUILD_NUMBER
