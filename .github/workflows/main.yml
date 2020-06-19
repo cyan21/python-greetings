@@ -40,13 +40,13 @@ jobs:
         run: jfrog rt pipc --repo-resolve asgardian-python --server-id-resolve yannaws_cyan21
 
       - name: Build 
-        run: jfrog rt pipi -r requirements.txt --no-cache-dir --force-reinstall --build-name=$JFROG_CLI_BUILD_NAME --build-name=$JFROG_CLI_BUILD_NUMBER --module=demo 
+        run: jfrog rt pipi -r requirements.txt --no-cache-dir --force-reinstall --build-name=$JFROG_CLI_BUILD_NAME --build-number=$JFROG_CLI_BUILD_NUMBER --module=demo 
 
       - name: Package
         run: python setup.py sdist bdist_wheel -d build/ 
 
       - name: Upload package
-        run: jfrog rt u build/ asgardian-python/ --build-name=$JFROG_CLI_BUILD_NAME --build-name=$JFROG_CLI_BUILD_NUMBER --module=demo
+        run: jfrog rt u build/ asgardian-python/ --build-name=$JFROG_CLI_BUILD_NAME --build-number=$JFROG_CLI_BUILD_NUMBER --module=demo
         
       - name: Publish Build Information
         run: |
