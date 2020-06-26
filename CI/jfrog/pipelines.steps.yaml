@@ -36,26 +36,25 @@ pipelines:
              - cd ${res_python_pipeline_src_resourcePath}/ && scripts/init.sh -r ${art_repo} -s art7 
              - cd ${res_python_pipeline_src_resourcePath}/ && scripts/build.sh -i ${pipeline_name} -n ${run_number} -t release -r ${art_repo} -a art7 -m demo -s ${int_artifactory_url} 
              - echo "END" 
-      - name: python_scan
-        type: XrayScan
-        configuration:
+     - name: python_scan
+       type: XrayScan
+       configuration:
 #          failOnScan: false
-          inputResources:
-            - name: python_BuildInfo
-              trigger: true
-          outputResources: 
+         inputResources:
+           - name: python_BuildInfo
+             trigger: true
+         outputResources: 
             - name: scanned_python_BuildInfo
-
-      - name: python_promote
-        type: PromoteBuild
-        configuration:
-          targetRepository:      ${art_repo_promotion} 
-          includeDependencies:   false   
-          status:                Passed
-          comment:               Artifact passed Xray Scan
-          copy:                  false
-          inputResources:
-            - name: scanned_python_BuildInfo    # optional
-              trigger: true       
-          outputResources:
-            - name: promoted_python_BuildInfo 
+     - name: python_promote
+       type: PromoteBuild
+       configuration:
+         targetRepository:      ${art_repo_promotion} 
+         includeDependencies:   false   
+         status:                Passed
+         comment:               Artifact passed Xray Scan
+         copy:                  false
+         inputResources:
+           - name: scanned_python_BuildInfo    # optional
+             trigger: true       
+         outputResources:
+           - name: promoted_python_BuildInfo 
