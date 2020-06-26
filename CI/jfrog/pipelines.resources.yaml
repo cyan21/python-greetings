@@ -1,0 +1,31 @@
+resources:
+  - name: python_pipeline_src
+    type: GitRepo
+    configuration:
+      gitProvider: yann_github
+      path: cyan21/python-greetings
+      branches:
+        include: jfrog 
+      buildOn:
+         commit: true
+
+  - name: python_BuildInfo 
+    type: BuildInfo 
+    configuration:
+      sourceArtifactory: artifactory_eu
+      buildName: ${pipeline_name} 
+      buildNumber: ${run_number} 
+
+  - name: scanned_python_BuildInfo
+    type: BuildInfo 
+    configuration:
+      sourceArtifactory: artifactory_eu
+      buildName: ${pipeline_name} 
+      buildNumber: ${run_number} 
+
+  - name: promoted_python_BuildInfo
+    type: BuildInfo 
+    configuration:
+      sourceArtifactory: artifactory_eu
+      buildName: ${pipeline_name} 
+      buildNumber: ${run_number} 
