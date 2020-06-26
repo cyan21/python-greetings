@@ -23,19 +23,19 @@ pipelines:
            - name: python_BuildInfo
          integrations:
            - name: artifactory
-       execution:
-         onStart:
-           - echo "Testing ..." 
-           - apt install curl -y
-           - mkdir /opt/jfrog
-           - curl -fL https://getcli.jfrog.io | sh &&  chmod 755 jfrog  && mv jfrog /usr/local/bin/
-           - jfrog rt c --interactive=false --url=${int_artifactory_url} --user=${int_artifactory_user} --apikey=${int_artifactory_apikey} art7 && jfrog rt use art7 && jfrog rt ping
-           - jfrog rt use art7 
-           - chmod 777 -R /opt/conda/lib/python3.7/site-packages/ /opt/jfrog
-           - chmod -R u+x ${res_python_pipeline_src_resourcePath}/scripts
-           - cd ${res_python_pipeline_src_resourcePath}/ && scripts/init.sh -r ${art_repo} -s art7 
-           - cd ${res_python_pipeline_src_resourcePath}/ && scripts/build.sh -i ${pipeline_name} -n ${run_number} -t release -r ${art_repo} -a art7 -m demo -s ${int_artifactory_url} 
-           - echo "END" 
+      #  execution:
+      #    onStart:
+      #      - echo "Testing ..." 
+      #      - apt install curl -y
+      #      - mkdir /opt/jfrog
+      #      - curl -fL https://getcli.jfrog.io | sh &&  chmod 755 jfrog  && mv jfrog /usr/local/bin/
+      #      - jfrog rt c --interactive=false --url=${int_artifactory_url} --user=${int_artifactory_user} --apikey=${int_artifactory_apikey} art7 && jfrog rt use art7 && jfrog rt ping
+      #      - jfrog rt use art7 
+      #      - chmod 777 -R /opt/conda/lib/python3.7/site-packages/ /opt/jfrog
+      #      - chmod -R u+x ${res_python_pipeline_src_resourcePath}/scripts
+      #      - cd ${res_python_pipeline_src_resourcePath}/ && scripts/init.sh -r ${art_repo} -s art7 
+      #      - cd ${res_python_pipeline_src_resourcePath}/ && scripts/build.sh -i ${pipeline_name} -n ${run_number} -t release -r ${art_repo} -a art7 -m demo -s ${int_artifactory_url} 
+      #      - echo "END" 
      - name: python_scan
        type: XrayScan
        configuration:
