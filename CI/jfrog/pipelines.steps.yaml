@@ -9,36 +9,38 @@ pipelines:
           JFROG_CLI_HOME: /opt/jfrog 
           JFROG_CLI_OFFER_CONFIG: "false"
     steps:
-#      - name: python_docker_build
-#        type: DockerBuild
-#        configuration:
-#          dockerFileLocation: . 
-#          dockerFileName: CI/DockerBuild/Dockerfile
-#          dockerImageName: docker-dev-local.artifactory-eu.soleng-emea-staging.jfrog.team/python-build
-#          dockerImageTag: ${run_number}
-#          dockerOptions: --build-arg BUILD_NAME=python-greeting --build-arg BUILD_NUMBER=${run_number}  --build-arg ARTY_URL=${art_url} --build-arg ARTY_USER=${int_artSecret_user}  --build-arg ARTY_APIKEY=${int_artSecret_apikey} --build-arg ARTY_MAIN_REPO=${art_repo} 
-#          inputResources:
-#            - name: python_pipeline_src
-#          integrations:
-#            - name: registry_eu
-#            - name: artSecret
+     - name: python_docker_build
+       type: DockerBuild
+       configuration:
+         dockerFileLocation: CI/DockerBuild/ 
+         dockerFileName: Dockerfile
+         dockerImageName: docker-dev-local.artifactory-eu.soleng-emea-staging.jfrog.team/python-build
+         dockerImageTag: ${run_number}
+         dockerOptions: --build-arg BUILD_NAME=python-greeting --build-arg BUILD_NUMBER=${run_number}  --build-arg ARTY_URL=${int_artifactory_url} --build-arg ARTY_USER=${int_artifactory_user}  --build-arg ARTY_APIKEY=${int_artifactory_apikey} --build-arg ARTY_MAIN_REPO=${art_repo} 
+         inputResources:
+           - name: python_pipeline_src
+         outputResources: 
+           - name: python_BuildInfo
+         integrations:
+           - name: artifactory
+#           - name: artSecret
 
-      - name: python_build 
-        type: Bash
-        configuration:
-          inputResources:
-            - name: python_pipeline_src
-          integrations:
-            - name: artifactory
-          outputResources:
-            - name: python_BuildInfo 
-          runtime:           
-            type: image 
-            image:
-              custom:
-                name: continuumio/miniconda3
-                tag: 4.7.12
-                registry: registry_art
+      # - name: python_build 
+      #   type: Bash
+      #   configuration:
+      #     inputResources:
+      #       - name: python_pipeline_src
+      #     integrations:
+      #       - name: artifactory
+      #     outputResources:
+      #       - name: python_BuildInfo 
+      #     runtime:           
+      #       type: image 
+      #       image:
+      #         custom:
+      #           name: continuumio/miniconda3
+      #           tag: 4.7.12
+      #           registry: registry_art
 #                sourceRepository: app-docker # required if registry is Artifactory. e.g. docker-local
         execution:
           onStart:
