@@ -57,7 +57,7 @@ pipelines:
       - name: python_scan
         type: XrayScan
         configuration:
-          failOnScan: false
+#          failOnScan: false
           inputResources:
             - name: python_BuildInfo
               trigger: true
