@@ -3,7 +3,7 @@ pipelines:
     configuration:
       environmentVariables:
         readOnly:
-          art_url: http://artifactory-eu.soleng-emea-staging.jfrog.team/artifactory
+#          art_url: http://artifactory-eu.soleng-emea-staging.jfrog.team/artifactory
           art_repo: asgardian-python
           art_repo_promotion: asgardian-python-uat-local
           JFROG_CLI_HOME: /opt/jfrog 
@@ -29,7 +29,7 @@ pipelines:
           inputResources:
             - name: python_pipeline_src
           integrations:
-            - name: artSecret
+            - name: artifactory
           outputResources:
             - name: python_BuildInfo 
           runtime:           
@@ -38,20 +38,20 @@ pipelines:
               custom:
                 name: continuumio/miniconda3
                 tag: 4.7.12
-                registry: registry_eu
-                sourceRepository: docker.artifactory-eu.soleng-emea-staging.jfrog.team # required if registry is Artifactory. e.g. docker-local
+                registry: artifactory
+                sourceRepository: docker-virtual # required if registry is Artifactory. e.g. docker-local
         execution:
           onExecute:
             - echo "Testing ..." 
             - apt install curl -y
             - mkdir /opt/jfrog
             - curl -fL https://getcli.jfrog.io | sh &&  chmod 755 jfrog  && mv jfrog /usr/local/bin/
-            - jfrog rt c --interactive=false --url=${art_url} --user=${int_artSecret_user} --apikey=${int_artSecret_apikey} art7 && jfrog rt use art7 && jfrog rt ping
+            - jfrog rt c --interactive=false --url=${int_artifactory_url} --user=${int_artifactory_user} --apikey=${int_artifactory_apikey} art7 && jfrog rt use art7 && jfrog rt ping
             - jfrog rt use art7 
             - chmod 777 -R /opt/conda/lib/python3.7/site-packages/ /opt/jfrog
             - chmod -R u+x ${res_python_pipeline_src_resourcePath}/scripts
             - cd ${res_python_pipeline_src_resourcePath}/ && scripts/init.sh -r ${art_repo} -s art7 
-            - cd ${res_python_pipeline_src_resourcePath}/ && scripts/build.sh -i ${pipeline_name} -n ${run_number} -t release -r ${art_repo} -a art7 -m demo -s ${art_url} 
+            - cd ${res_python_pipeline_src_resourcePath}/ && scripts/build.sh -i ${pipeline_name} -n ${run_number} -t release -r ${art_repo} -a art7 -m demo -s ${int_artifactory_url} 
             - echo "END" 
 
       - name: python_scan
