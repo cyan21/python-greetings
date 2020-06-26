@@ -38,7 +38,7 @@ pipelines:
               custom:
                 name: continuumio/miniconda3
                 tag: 4.7.12
-                registry: artifactory
+                registry: registry_art
                 sourceRepository: docker-virtual # required if registry is Artifactory. e.g. docker-local
         execution:
           onStart:
