@@ -41,7 +41,7 @@ pipelines:
                 registry: artifactory
                 sourceRepository: docker-virtual # required if registry is Artifactory. e.g. docker-local
         execution:
-          onExecute:
+          onStart:
             - echo "Testing ..." 
             - apt install curl -y
             - mkdir /opt/jfrog
