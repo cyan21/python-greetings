@@ -39,7 +39,7 @@ pipelines:
                 name: continuumio/miniconda3
                 tag: 4.7.12
                 registry: registry_art
-                sourceRepository: app-docker # required if registry is Artifactory. e.g. docker-local
+#                sourceRepository: app-docker # required if registry is Artifactory. e.g. docker-local
         execution:
           onStart:
             - echo "Testing ..." 
