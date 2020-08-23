@@ -1,60 +1,46 @@
 pipelines:
-  - name: python_pipeline
+  - name: app_python
     configuration:
       environmentVariables:
         readOnly:
 #          art_url: http://artifactory-eu.soleng-emea-staging.jfrog.team/artifactory
-          art_repo: asgardian-python
-          art_repo_promotion: asgardian-python-uat-local
-          JFROG_CLI_HOME: /opt/jfrog 
-          JFROG_CLI_OFFER_CONFIG: "false"
+          pythonRepo: asgardian-python
+          pythonPromoteRepo: asgardian-python-uat-local
+          myDockerImageName: docker-dev-local.artifactory-eu.soleng-emea-staging.jfrog.team/python-build
     steps:
-     - name: python_docker_build
+     - name: build_app_python
        type: DockerBuild
        configuration:
          dockerFileLocation: CI/DockerBuild/ 
          dockerFileName: Dockerfile
-         dockerImageName: docker-dev-local.artifactory-eu.soleng-emea-staging.jfrog.team/python-build
+         dockerImageName: ${mydDockerImageName}
          dockerImageTag: ${run_number}
-         dockerOptions: --build-arg BUILD_NAME=python-greeting --build-arg BUILD_NUMBER=${run_number}  --build-arg ARTY_URL=${int_artifactory_url} --build-arg ARTY_USER=${int_artifactory_user}  --build-arg ARTY_APIKEY=${int_artifactory_apikey} --build-arg ARTY_MAIN_REPO=${art_repo} 
+         dockerOptions: --build-arg BUILD_NAME=python-greeting --build-arg BUILD_NUMBER=${run_number}  --build-arg ARTY_URL=${int_artifactory_url} --build-arg ARTY_USER=${int_artifactory_user}  --build-arg ARTY_APIKEY=${int_artifactory_apikey} --build-arg ARTY_MAIN_REPO=${pythonRepo} 
          inputResources:
-           - name: python_pipeline_src
+           - name: src_code_app_python
          outputResources: 
-           - name: python_BuildInfo
+           - name: bi_app_python
          integrations:
            - name: artifactory
-      #  execution:
-      #    onStart:
-      #      - echo "Testing ..." 
-      #      - apt install curl -y
-      #      - mkdir /opt/jfrog
-      #      - curl -fL https://getcli.jfrog.io | sh &&  chmod 755 jfrog  && mv jfrog /usr/local/bin/
-      #      - jfrog rt c --interactive=false --url=${int_artifactory_url} --user=${int_artifactory_user} --apikey=${int_artifactory_apikey} art7 && jfrog rt use art7 && jfrog rt ping
-      #      - jfrog rt use art7 
-      #      - chmod 777 -R /opt/conda/lib/python3.7/site-packages/ /opt/jfrog
-      #      - chmod -R u+x ${res_python_pipeline_src_resourcePath}/scripts
-      #      - cd ${res_python_pipeline_src_resourcePath}/ && scripts/init.sh -r ${art_repo} -s art7 
-      #      - cd ${res_python_pipeline_src_resourcePath}/ && scripts/build.sh -i ${pipeline_name} -n ${run_number} -t release -r ${art_repo} -a art7 -m demo -s ${int_artifactory_url} 
-      #      - echo "END" 
-     - name: python_scan
+     - name: scan_app_python
        type: XrayScan
        configuration:
 #          failOnScan: false
          inputResources:
-           - name: python_BuildInfo
+           - name: bi_app_python
              trigger: true
          outputResources: 
             - name: scanned_python_BuildInfo
-     - name: python_promote
-       type: PromoteBuild
-       configuration:
-         targetRepository:      ${art_repo_promotion} 
-         includeDependencies:   false   
-         status:                Passed
-         comment:               Artifact passed Xray Scan
-         copy:                  false
-         inputResources:
-           - name: scanned_python_BuildInfo    # optional
-             trigger: true       
-         outputResources:
-           - name: promoted_python_BuildInfo 
+    #  - name: python_promote
+    #    type: PromoteBuild
+    #    configuration:
+    #      targetRepository:      ${pythonPromoteRepo} 
+    #      includeDependencies:   false   
+    #      status:                Passed
+    #      comment:               Artifact passed Xray Scan
+    #      copy:                  false
+    #      inputResources:
+    #        - name: scanned_python_BuildInfo    # optional
+    #          trigger: true       
+    #      outputResources:
+    #        - name: promoted_python_BuildInfo 

@@ -1,31 +1,29 @@
 resources:
-  - name: python_pipeline_src
+  - name: src_code_app_python
     type: GitRepo
     configuration:
-      gitProvider: ych_github
+      gitProvider: yann_github
       path: cyan21/python-greetings
       branches:
         include: jfrog 
       buildOn:
          commit: true
 
-  - name: python_BuildInfo 
+  - name: bi_app_python 
     type: BuildInfo 
     configuration:
       sourceArtifactory: artifactory
       buildName: ${pipeline_name} 
       buildNumber: ${run_number} 
 
-  - name: scanned_python_BuildInfo
+  - name: bi_app_python_promoted_staging
     type: BuildInfo 
     configuration:
       sourceArtifactory: artifactory
       buildName: ${pipeline_name} 
       buildNumber: ${run_number} 
 
-  - name: promoted_python_BuildInfo
-    type: BuildInfo 
+  - name: pb_app_python
+    type: PropertyBag
     configuration:
-      sourceArtifactory: artifactory
-      buildName: ${pipeline_name} 
-      buildNumber: ${run_number} 
+      biNumber: XXX
