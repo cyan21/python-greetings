@@ -12,14 +12,14 @@ resources:
   - name: bi_app_python 
     type: BuildInfo 
     configuration:
-      sourceArtifactory: artifactory
+      sourceArtifactory: artifactory_eu
       buildName: ${pipeline_name} 
       buildNumber: ${run_number} 
 
   - name: bi_app_python_promoted_staging
     type: BuildInfo 
     configuration:
-      sourceArtifactory: artifactory
+      sourceArtifactory: artifactory_eu
       buildName: ${pipeline_name} 
       buildNumber: ${run_number} 
 
