@@ -42,5 +42,7 @@ pipelines:
          inputSteps:
            - name: scan_app_python    # optional
              trigger: true       
+         intputResources:
+           - name: bi_app_python 
          outputResources:
            - name: pb_app_python 
