@@ -40,8 +40,7 @@ pipelines:
          comment:               Artifact passed Xray Scan
          copy:                  false
          inputSteps:
-           - name: scan_app_python    # optional
-             trigger: true       
+           - name: scan_app_python
          inputResources:
            - name: bi_app_python 
          outputResources:
