@@ -1,0 +1,22 @@
+localRepositories:   
+  ninja-dev-python-local:
+    type: pip
+    xray:   
+      enabled: true
+  ninja-rc-python-local:
+    type: pip
+    xray:   
+      enabled: true
+remoteRepositories: 
+  ninja-pypi-remote:
+    type: pip 
+    url: https://jcenter.bintray.com 
+    xray:   
+      enabled: true
+virtualRepositories: 
+  ninja-dev-python:
+    type: pip
+    repositories:   
+      - ninja-dev-python-local
+      - ninja-pypi-remote
+    defaultDeploymentRepo: ninja-dev-python-local
