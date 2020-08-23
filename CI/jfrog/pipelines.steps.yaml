@@ -45,3 +45,4 @@ pipelines:
            - name: bi_app_python 
          outputResources:
            - name: pb_app_python 
+           - name: bi_app_python_promoted_staging
