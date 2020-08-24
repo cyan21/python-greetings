@@ -4,10 +4,10 @@ JFrog platform enabling Artifactory, Xray, Pipelines
 
 | Service | Type | Name | Description | 
 | ----------- | ----------- |----------- | ----------- |
-| Artifactory | Python virtual repo | ninja-dev-python | aggregate  dev local and remote | 
-| Artifactory | Python local repo   | ninja-dev-python-local | | 
-| Artifactory | Python local repo   | ninja-rc-python-local | for promotion | 
-| Artifactory | Python remote repo  | ninja-pypi-remote | | 
+| Artifactory | Python virtual repo | asgardian-dev-python | aggregate  dev local and remote | 
+| Artifactory | Python local repo   | asgardian-dev-python-local | | 
+| Artifactory | Python local repo   | asgardian-rc-python-local | for promotion | 
+| Artifactory | Python remote repo  | asgardian-pypi-remote | | 
 | Pipelines   | Github Integration | yann_github | pointing to https://github.com/cyan21 |
 | Pipelines   | Artifactory Integration | artifactory_eu | |
 

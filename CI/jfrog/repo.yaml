@@ -1,24 +1,24 @@
 localRepositories:   
   asgardian-dev-python-local:
-    type: pip
+    type: pypi
     repoLayout: simple-default 
     xray:   
       enabled: true
   asgardian-rc-python-local:
-    type: pip
+    type: pypi
     repoLayout: simple-default 
     xray:   
       enabled: true
 remoteRepositories: 
   asgardian-pypi-remote:
-    type: pip 
+    type: pypi 
     url: https://files.pythonhosted.org 
     repoLayout: simple-default 
     xray:   
       enabled: true
 virtualRepositories: 
   asgardian-dev-python:
-    type: pip
+    type: pypi
     repoLayout: simple-default 
     repositories:   
       - asgardian-dev-python-local
