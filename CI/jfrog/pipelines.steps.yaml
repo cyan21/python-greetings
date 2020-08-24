@@ -14,7 +14,7 @@ pipelines:
             image:
               custom:
                 name: continuumio/miniconda3
-                tag: 4.7.12
+                tag: 4.7.12-jfrog
                 sourceRepository: ${pythonRepo}
           inputResources:
             - name: src_code_app_python
