@@ -3,6 +3,7 @@ pipelines:
     configuration:
       environmentVariables:
         readOnly:
+          myDockerRegistry: artifactory-eu.soleng-emea.jfrog.team
           pythonRepo: asgardian-python
           pythonPromoteRepo: asgardian-python-rc-local
     steps:
@@ -13,9 +14,9 @@ pipelines:
             type: image
             image:
               custom:
-                name: continuumio/miniconda3
+                name: ${pythonRepo}.${myDockerRegistry}/continuumio/miniconda3
                 tag: 4.7.12-jfrog
-                sourceRepository: ${pythonRepo}
+#                sourceRepository: ${pythonRepo}
           inputResources:
             - name: src_code_app_python
           outputResources:
@@ -24,12 +25,11 @@ pipelines:
             - name: artifactory_eu
         execution:
           onStart:
-            - curl -fL https://getcli.jfrog.io | sh &&  chmod 755 jfrog &&  mv jfrog /usr/local/bin/
             - jfrog rt c --interactive=false --url=${int_artifactory_eu_url} --user=${int_artifactory_eu_user} --apikey=${int_artifactory_eu_apiKey} art7
             - cd ${res_src_code_app_python_resourcePath} && ls -l
             - chmod u+x scripts/build.sh scripts/init.sh
             - scripts/init.sh -r ${pythonRepo} -s art7
-            - scripts/build.sh -i ${pipeline_name} -n ${run_number} -t release -r ${pythonRepo} -a art7 -s ${©} -m python-module"]
+            - scripts/build.sh -i ${pipeline_name} -n ${run_number} -t release -r ${pythonRepo} -a art7 -s ${int_artifactory_eu_url} -m python-module"]
 
       - name: scan_app_python
         type: XrayScan
