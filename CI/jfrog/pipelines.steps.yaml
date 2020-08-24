@@ -20,6 +20,7 @@ pipelines:
               sudo jq -n  "{\"insecure-registries\": [\"${myDockerRegistry}\"]}" > /etc/docker/daemon.json
             - sudo systemctl restart docker
             - sudo cat /etc/docker/daemon.json
+            - sudo systemctl status docker
       - name: build_app_python
         type: Bash
         configuration:
@@ -30,7 +31,7 @@ pipelines:
               custom:
                 name: ${myDockerRegistry}/continuumio/miniconda3
                 tag: 4.7.12-jfrog
-#                sourceRepository: ${pythonRepo}
+                sourceRepository: ${myDockerRegistry}
           inputSteps:
             - name: setup_env
           inputResources:
