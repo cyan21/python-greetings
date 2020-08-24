@@ -32,7 +32,7 @@ pipelines:
                 registry: artifactory_eu
                 name: ${myDockerRegistry}/continuumio/miniconda3
                 tag: 4.7.12-jfrog
-#Ò                sourceRepository: ${myDockerRegistry}
+                sourceRepository: ${myDockerRegistry}
           inputSteps:
             - name: setup_env
           inputResources:
