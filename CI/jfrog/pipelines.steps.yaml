@@ -10,12 +10,12 @@ pipelines:
         type: Bash
         configuration:
           runtime:
-          type: image
-          image:
-            custom:
-              name: continuumio/miniconda3
-              tag: 4.7.12
-              sourceRepository: ${pythonRepo}
+            type: image
+            image:
+              custom:
+                name: continuumio/miniconda3
+                tag: 4.7.12
+                sourceRepository: ${pythonRepo}
           inputResources:
             - name: src_code_app_python
           outputResources:
