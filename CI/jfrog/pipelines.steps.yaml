@@ -29,6 +29,7 @@ pipelines:
             type: image
             image:
               custom:
+                registry: artifactory_eu
                 name: ${myDockerRegistry}/continuumio/miniconda3
                 tag: 4.7.12-jfrog
                 sourceRepository: ${myDockerRegistry}
