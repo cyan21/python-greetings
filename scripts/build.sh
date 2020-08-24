@@ -86,7 +86,7 @@ python setup.py sdist bdist_wheel -d $target_folder
 echo "[INFO] wheel package generated ! "
 
 echo "[INFO] uploading wheel package to Artifactory ... "
-jfrog rt u $target_folder/ $target_repo/ \
+jfrog rt u $target_folder/ $target_repo \
   --build-name=$build_id \
   --build-number=$build_number \
   --module=$module_id
