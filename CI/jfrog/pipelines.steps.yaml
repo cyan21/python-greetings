@@ -5,7 +5,7 @@ pipelines:
         readOnly:
           myDockerRegistry: asgardian-docker.artifactory-eu.soleng-emea.jfrog.team
           pythonRepo: asgardian-python
-          pythonPromoteRepo: asgardian-python-rc-local
+          pythonPromoteRepo: asgardian-rc-python-local
     steps:
       - name: setup_env
         type: Bash
