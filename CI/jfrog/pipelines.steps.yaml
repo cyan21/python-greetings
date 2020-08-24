@@ -31,6 +31,8 @@ pipelines:
                 name: ${pythonRepo}.${myDockerRegistry}/continuumio/miniconda3
                 tag: 4.7.12-jfrog
 #                sourceRepository: ${pythonRepo}
+          inputSteps:
+            - name: setup_env
           inputResources:
             - name: src_code_app_python
           outputResources:
