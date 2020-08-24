@@ -3,7 +3,7 @@ pipelines:
     configuration:
       environmentVariables:
         readOnly:
-          myDockerRegistry: artifactory-eu.soleng-emea.jfrog.team
+          myDockerRegistry: asgardian-docker.artifactory-eu.soleng-emea.jfrog.team
           pythonRepo: asgardian-python
           pythonPromoteRepo: asgardian-python-rc-local
     steps:
@@ -17,7 +17,7 @@ pipelines:
           onExecute:
             - sudo mkdir -p /etc/docker 
             - > 
-              sudo jq -n  "{\"insecure-registries\": [\"${pythonRepo}.${myDockerRegistry}\"]}" > /etc/docker/daemon.json
+              sudo jq -n  "{\"insecure-registries\": [\"${myDockerRegistry}\"]}" > /etc/docker/daemon.json
             - sudo systemctl restart docker
             - sudo cat /etc/docker/daemon.json
       - name: build_app_python
@@ -28,9 +28,9 @@ pipelines:
             type: image
             image:
               custom:
-                name: ${pythonRepo}.${myDockerRegistry}/continuumio/miniconda3
+                name: ${myDockerRegistry}/continuumio/miniconda3
                 tag: 4.7.12-jfrog
-                sourceRepository: ${pythonRepo}
+#                sourceRepository: ${pythonRepo}
           inputSteps:
             - name: setup_env
           inputResources:
