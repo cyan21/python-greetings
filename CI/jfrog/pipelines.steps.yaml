@@ -32,7 +32,7 @@ pipelines:
                 registry: artifactory_eu
                 name: ${myDockerRegistry}/continuumio/miniconda3
                 tag: 4.7.12-jfrog
-                sourceRepository: ${myDockerRegistry}
+#Ò                sourceRepository: ${myDockerRegistry}
           inputSteps:
             - name: setup_env
           inputResources:
@@ -47,7 +47,7 @@ pipelines:
             - cd ${res_src_code_app_python_resourcePath} && ls -l
             - chmod u+x scripts/build.sh scripts/init.sh
             - scripts/init.sh -r ${pythonRepo} -s art7
-            - scripts/build.sh -i ${pipeline_name} -n ${run_number} -t release -r ${pythonRepo} -a art7 -s ${int_artifactory_eu_url} -m python-module"]
+            - scripts/build.sh -i ${pipeline_name} -n ${run_number} -t release -r ${pythonRepo} -a art7 -s ${int_artifactory_eu_url} -m python-module
 
       - name: scan_app_python
         type: XrayScan
