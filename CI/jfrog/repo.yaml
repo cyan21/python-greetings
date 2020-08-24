@@ -1,22 +1,26 @@
 localRepositories:   
-  ninja-dev-python-local:
+  asgardian-dev-python-local:
     type: pip
+    repoLayout: simple-default 
     xray:   
       enabled: true
-  ninja-rc-python-local:
+  asgardian-rc-python-local:
     type: pip
+    repoLayout: simple-default 
     xray:   
       enabled: true
 remoteRepositories: 
-  ninja-pypi-remote:
+  asgardian-pypi-remote:
     type: pip 
-    url: https://jcenter.bintray.com 
+    url: https://files.pythonhosted.org 
+    repoLayout: simple-default 
     xray:   
       enabled: true
 virtualRepositories: 
-  ninja-dev-python:
+  asgardian-dev-python:
     type: pip
+    repoLayout: simple-default 
     repositories:   
-      - ninja-dev-python-local
-      - ninja-pypi-remote
-    defaultDeploymentRepo: ninja-dev-python-local
+      - asgardian-dev-python-local
+      - asgardian-pypi-remote
+    defaultDeploymentRepo: asgardian-dev-python-local

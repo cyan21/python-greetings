@@ -5,17 +5,16 @@ pipelines:
         readOnly:
 #          art_url: http://artifactory-eu.soleng-emea-staging.jfrog.team/artifactory
           pythonRepo: asgardian-python
-          pythonPromoteRepo: asgardian-python-uat-local
-          myDockerImageName: docker-dev-local.artifactory-eu.soleng-emea-staging.jfrog.team/python-build
+          pythonPromoteRepo: asgardian-python-rc-local
     steps:
      - name: build_app_python
        type: DockerBuild
        configuration:
          dockerFileLocation: CI/DockerBuild/ 
          dockerFileName: Dockerfile
-         dockerImageName: ${mydDockerImageName}
+         dockerImageName: asgardian-build
          dockerImageTag: ${run_number}
-         dockerOptions: --build-arg BUILD_NAME=python-greeting --build-arg BUILD_NUMBER=${run_number}  --build-arg ARTY_URL=${int_artifactory_url} --build-arg ARTY_USER=${int_artifactory_user}  --build-arg ARTY_APIKEY=${int_artifactory_apikey} --build-arg ARTY_MAIN_REPO=${pythonRepo} 
+         dockerOptions: --build-arg BUILD_NAME=python-greeting --build-arg BUILD_NUMBER=${run_number}  --build-arg ARTY_URL=${int_artifactory_eu_url} --build-arg ARTY_USER=${int_artifactory_eu_user}  --build-arg ARTY_APIKEY=${int_artifactory_eu_apikey} --build-arg ARTY_MAIN_REPO=${pythonRepo} 
          inputResources:
            - name: src_code_app_python
          outputResources: 

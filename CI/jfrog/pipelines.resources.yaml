@@ -5,9 +5,9 @@ resources:
       gitProvider: yann_github
       path: cyan21/python-greetings
       branches:
-        include: jfrog 
+        include: refactor 
       buildOn:
-         commit: true
+         commit: false
 
   - name: bi_app_python 
     type: BuildInfo 
