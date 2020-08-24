@@ -6,53 +6,53 @@ pipelines:
           pythonRepo: asgardian-python
           pythonPromoteRepo: asgardian-python-rc-local
     steps:
-     - name: build_app_python
-       type: Bash
-       configuration:
-         runtime:
-         type: image
-         image:
-           custom:
-             name: continuumio/miniconda3
-             tag: 4.7.12
-             sourceRepository: ${pythonRepo}
-         inputResources:
-           - name: src_code_app_python
-         outputResources: 
-           - name: bi_app_python
-         integrations:
-           - name: artifactory_eu
-       execution:
-         onStart:
-           - jfrog --version
-           - jfrog rt c show
-           - jfrog rt pipc --repo-resolve ${pythonRepo}
-           - cd ${res_src_code_app_python_resourcePath} && ls -l ${res_src_code_app_python_resourcePath}
-           - chmod u+x scripts/build.sh scripts/init.sh
-#            - scripts/init.sh -r ${int_artifactory_eu_url} -s art7
-           - scripts/build.sh -i ${pipeline_name} -n ${run_number} -t release -r ${pythonRepo} -a art7 -s ${int_artifactory_eu_url} -m python-module"]
+      - name: build_app_python
+        type: Bash
+        configuration:
+          runtime:
+          type: image
+          image:
+            custom:
+              name: continuumio/miniconda3
+              tag: 4.7.12
+              sourceRepository: ${pythonRepo}
+          inputResources:
+            - name: src_code_app_python
+          outputResources:
+            - name: bi_app_python
+          integrations:
+            - name: artifactory_eu
+        execution:
+          onStart:
+            - jfrog --version
+            - jfrog rt c show
+            - jfrog rt pipc --repo-resolve ${pythonRepo}
+            - cd ${res_src_code_app_python_resourcePath} && ls -l ${res_src_code_app_python_resourcePath}
+            - chmod u+x scripts/build.sh scripts/init.sh
+            #            - scripts/init.sh -r ${int_artifactory_eu_url} -s art7
+            - scripts/build.sh -i ${pipeline_name} -n ${run_number} -t release -r ${pythonRepo} -a art7 -s ${int_artifactory_eu_url} -m python-module"]
 
-     - name: scan_app_python
-       type: XrayScan
-       configuration:
-#          failOnScan: false
-         inputResources:
-           - name: bi_app_python
-             trigger: true
-        #  outputResources: 
-        #     - name: scanned_python_BuildInfo
-     - name: python_promote
-       type: PromoteBuild
-       configuration:
-         targetRepository:      ${pythonPromoteRepo} 
-         includeDependencies:   false   
-         status:                Passed
-         comment:               Artifact passed Xray Scan
-         copy:                  false
-         inputSteps:
-           - name: scan_app_python
-         inputResources:
-           - name: bi_app_python 
-         outputResources:
-           - name: pb_app_python 
-           - name: bi_app_python_promoted_staging
+      - name: scan_app_python
+        type: XrayScan
+        configuration:
+          #          failOnScan: false
+          inputResources:
+            - name: bi_app_python
+              trigger: true
+          #  outputResources:
+          #     - name: scanned_python_BuildInfo
+      - name: python_promote
+        type: PromoteBuild
+        configuration:
+          targetRepository: ${pythonPromoteRepo}
+          includeDependencies: false
+          status: Passed
+          comment: Artifact passed Xray Scan
+          copy: false
+          inputSteps:
+            - name: scan_app_python
+          inputResources:
+            - name: bi_app_python
+          outputResources:
+            - name: pb_app_python
+            - name: bi_app_python_promoted_staging
