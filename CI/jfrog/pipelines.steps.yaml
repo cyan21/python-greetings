@@ -24,12 +24,9 @@ pipelines:
             - name: artifactory_eu
         execution:
           onStart:
-            - jfrog --version
-            - jfrog rt c show
-            - jfrog rt pipc --repo-resolve ${pythonRepo}
             - cd ${res_src_code_app_python_resourcePath} && ls -l ${res_src_code_app_python_resourcePath}
             - chmod u+x scripts/build.sh scripts/init.sh
-            #            - scripts/init.sh -r ${int_artifactory_eu_url} -s art7
+            - scripts/init.sh -r ${pythonRepo} -s art7
             - scripts/build.sh -i ${pipeline_name} -n ${run_number} -t release -r ${pythonRepo} -a art7 -s ${int_artifactory_eu_url} -m python-module"]
 
       - name: scan_app_python
