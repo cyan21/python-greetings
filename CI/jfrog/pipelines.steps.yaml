@@ -52,7 +52,7 @@ pipelines:
       - name: scan_app_python
         type: XrayScan
         configuration:
-          #          failOnScan: false
+          failOnScan: false
           inputResources:
             - name: bi_app_python
               trigger: true
