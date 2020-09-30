@@ -44,8 +44,8 @@ pipelines:
         execution:
           onStart:
 #            - jfrog rt c --interactive=false --url=${int_artifactory_eu_url} --user=${int_artifactory_eu_user} --apikey=${int_artifactory_eu_apiKey} art7
-            - git branch && git checkout refactor
             - cd ${res_src_code_app_python_resourcePath} && ls -l
+            - git branch && git checkout refactor
             - chmod u+x scripts/build.sh scripts/init.sh
             - scripts/init.sh -r ${pythonRepo} -s artifactory_eu
             - scripts/build.sh -i ${pipeline_name} -n ${run_number} -t release -r ${pythonRepo} -a artifactory_eu -s ${int_artifactory_eu_url} -m python-module
