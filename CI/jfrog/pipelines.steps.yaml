@@ -49,6 +49,8 @@ pipelines:
             - chmod u+x scripts/build.sh scripts/init.sh
             - scripts/init.sh -r ${pythonRepo} -s artifactory_eu
             - scripts/build.sh -i ${pipeline_name} -n ${run_number} -t release -r ${pythonRepo} -a artifactory_eu -s ${int_artifactory_eu_url} -m python-module
+            - >
+              curl -u${int_artifactory_eu_user}:${int_artifactory_eu_apiKey} -XPOST -H "Content-Type: application/json" -d "{\"names\":[\"${res_bi_app_python_buildName}\"]}" "${int_artifactory_eu_url}/xray/api/v1/binMgr/builds"
 
       - name: scan_app_python
         type: XrayScan
@@ -59,11 +61,6 @@ pipelines:
               trigger: true
           #  outputResources:
           #     - name: scanned_python_BuildInfo
-        execution:
-          onStart:
-            - echo ${int_artifactory_eu_url}/xray/api/v1/binMgr/builds
-            - >
-              curl -u${int_artifactory_eu_user}:${int_artifactory_eu_apiKey} -XPOST -H "Content-Type: application/json" -d "{\"names\":[\"${res_bi_app_python_buildName}\"]}" "${int_artifactory_eu_url}/xray/api/v1/binMgr/builds"
 
       - name: python_promote
         type: PromoteBuild
