@@ -61,8 +61,9 @@ pipelines:
           #     - name: scanned_python_BuildInfo
         execution:
           onStart:
+            - echo ${int_artifactory_eu_url}/xray/api/v1/binMgr/builds
             - >
-              curl -u${int_artifactory_eu_user}:${int_artifactory_eu_apiKey} -XPOST -H "Content-Type: application/json" -d "{\"names\":[\"${res_bi_app_python_buildName}\"]}" ${int_artifactory_eu_url}/xray/api/v1/binMgr/builds
+              curl -u${int_artifactory_eu_user}:${int_artifactory_eu_apiKey} -XPOST -H "Content-Type: application/json" -d "{\"names\":[\"${res_bi_app_python_buildName}\"]}" "${int_artifactory_eu_url}/xray/api/v1/binMgr/builds"
 
       - name: python_promote
         type: PromoteBuild
