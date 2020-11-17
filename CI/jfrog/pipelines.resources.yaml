@@ -5,7 +5,7 @@ resources:
       gitProvider: yann_github
       path: cyan21/python-greetings
       branches:
-        include: jfrog-ode 
+        include: jfrog-ode
       buildOn:
          commit: false
 
