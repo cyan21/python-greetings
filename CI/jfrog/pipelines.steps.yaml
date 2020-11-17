@@ -43,8 +43,7 @@ pipelines:
             - name: artifactory_eu
         execution:
           onStart:
-            - export
-          JFROG_CLI_BUILD_URL="${int_artifactory_eu_url/%artifactory/ui}/pipelines/myPipelines/${pipeline_name}/${run_number}/setup_env?branch=${res_src_code_app_python_branchName}"
+            - export JFROG_CLI_BUILD_URL="${int_artifactory_eu_url/%artifactory/ui}/pipelines/myPipelines/${pipeline_name}/${run_number}/setup_env?branch=${res_src_code_app_python_branchName}"
             - cd ${res_src_code_app_python_resourcePath} && ls -l
             - git branch && git checkout refactor
             - chmod u+x scripts/build.sh scripts/init.sh
