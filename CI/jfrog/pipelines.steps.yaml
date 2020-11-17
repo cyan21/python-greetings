@@ -53,7 +53,7 @@ pipelines:
             - echo -u${int_artifactory_eu_user}:${int_artifactory_eu_apikey}
             - echo ${int_artifactory_eu_url/%artifactory/xray}/api/v1/binMgr/builds
             - >
-              curl -u${int_artifactory_eu_user}:${int_artifactory_eu_apikey} -XPOST -H "Content-Type: application/json" -d "{\"names\":[\"${res_bi_app_python_buildName}\"]}" ${int_artifactory_eu_url/%artifactory/xray}/api/v1/binMgr/builds
+              curl -u${int_artifactory_eu_user}:${int_artifactory_eu_apikey} -XPOST -H "Content-Type: application/json" -d "{\"names\":[\"${pipeline_name}\"]}" ${int_artifactory_eu_url/%artifactory/xray}/api/v1/binMgr/builds
 
       - name: scan_app_python
         type: XrayScan
