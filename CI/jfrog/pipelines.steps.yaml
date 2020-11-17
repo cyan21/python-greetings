@@ -43,7 +43,8 @@ pipelines:
             - name: artifactory_eu
         execution:
           onStart:
-#            - jfrog rt c --interactive=false --url=${int_artifactory_eu_url} --user=${int_artifactory_eu_user} --apikey=${int_artifactory_eu_apiKey} art7
+            - export
+          JFROG_CLI_BUILD_URL="${int_artifactory_eu_url/%artifactory/ui}/pipelines/myPipelines/${pipeline_name}/${run_number}/setup_env?branch=${res_src_code_app_python_branchName}"
             - cd ${res_src_code_app_python_resourcePath} && ls -l
             - git branch && git checkout refactor
             - chmod u+x scripts/build.sh scripts/init.sh
@@ -59,6 +60,10 @@ pipelines:
               trigger: true
           #  outputResources:
           #     - name: scanned_python_BuildInfo
+        execution:
+          onStart:
+            - curl -u${int_artifactory_eu_user}:${int_artifactory_eu_apiKey} -XPOST -H "Content-Type: application/json" -d "{\"names\":[\"${res_bi_app_python_buildName}\"]}" ${int_artifactory_eu_url}/xray/api/v1/binMgr/builds
+
       - name: python_promote
         type: PromoteBuild
         configuration:
