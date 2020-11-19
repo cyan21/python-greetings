@@ -1,0 +1,67 @@
+{
+    "general_data": {
+        "name": "asgardian",
+        "description": "This is a new watch created using API V2",
+        "active": true
+    },
+    "project_resources": {
+        "resources": [
+            {
+                "type": "repository",
+                "name": "asgardian-dev-python-local",
+                "bin_mgr_id": "unused",
+                "filters": [
+                    {
+                        "type": "regex",
+                        "value": ".*"
+                    }
+                ]
+            },
+            {
+                "type": "repository",
+                "name": "asgardian-rc-python-local",
+                "bin_mgr_id": "unused",
+                "filters": [
+                    {
+                        "type": "regex",
+                        "value": ".*"
+                    }
+                ]
+            },
+            {
+                "type": "repository",
+                "name": "asgardian-release-docker-local",
+                "bin_mgr_id": "unused",
+                "filters": [
+                    {
+                        "type": "regex",
+                        "value": ".*"
+                    }
+                ]
+            },
+            {
+                "type": "repository",
+                "repo_type": "remote",
+                "name": "asgardian-pypi-remote",
+                "bin_mgr_id": "unused",
+                "filters": [
+                    {
+                        "type": "regex",
+                        "value": ".*"
+                    }
+                ]
+            },  
+            {
+                "type": "build",
+                "bin_mgr_id": "unused",
+                "name": "app_python"
+            }
+        ]
+    },
+    "assigned_policies": [
+        {
+            "name": "global",
+            "type": "security"
+        }
+    ]
+}
