@@ -19,7 +19,7 @@ resources:
       buildName: python_base_image
       buildNumber: ${run_number} 
 
-  - name: bi_base_image_docker_promoted
+  - name: bi_base_image_python_promoted
     type: BuildInfo 
     configuration:
       sourceArtifactory: artifactory_eu
