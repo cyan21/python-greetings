@@ -12,7 +12,7 @@ resources:
       buildOn:
          commit: false
 
-  - name: bi_base_image_docker 
+  - name: bi_base_image_python 
     type: BuildInfo 
     configuration:
       sourceArtifactory: artifactory_eu

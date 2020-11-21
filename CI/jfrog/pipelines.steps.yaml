@@ -55,7 +55,7 @@ pipelines:
           integrations:
             - name: artifactory_eu
           outputResources:
-            - name: bi_base_image_docker
+            - name: bi_base_image_python
 
       - name: promote_python_base_image
         type: PromoteBuild
@@ -66,13 +66,13 @@ pipelines:
           comment: "Xray scan passed succesfully"
           copy: false
           inputResources:
-            - name: bi_base_image_docker
+            - name: bi_base_image_python
           inputSteps:
             - name: publish_python_base_image
           integrations:
             - name: artifactory_eu
           outputResources:
-            - name: bi_base_image_docker_promoted
+            - name: bi_base_image_python_promoted
             - name: pb_base_image_python
 
   - name: app_python
