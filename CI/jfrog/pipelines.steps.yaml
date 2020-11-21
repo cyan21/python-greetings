@@ -1,4 +1,80 @@
 pipelines:
+  - name: python_project_init
+    configuration:
+      environmentVariables:
+        readOnly:
+          myDockerRegistry: asgardian-docker.artifactory-eu-yannc3-0.soleng-emea-staging.jfrog.team:80
+          dockerPushRepo: asgardian-docker
+          baseImageTag: 4.7.12-jfrog
+    steps:
+      - name: setup_env
+        type: Bash
+        configuration:
+          affinityGroup: python
+          runtime:
+            type: host
+        execution:
+          onExecute:
+            - sudo mkdir -p /etc/docker 
+            - > 
+              sudo jq -n  "{\"insecure-registries\": [\"${myDockerRegistry}\"]}" > /etc/docker/daemon.json
+            - sudo systemctl restart docker
+            - sudo cat /etc/docker/daemon.json
+            - sudo systemctl status docker
+
+      - name: build_python_base_image
+        type: DockerBuild
+        configuration:
+          affinityGroup: python
+          dockerFileName: Dockerfile
+          dockerFileLocation: CI/jfrog/
+          dockerImageName: ${myDockerRegistry}/continuumio/miniconda3
+          dockerImageTag: ${baseImageTag}
+          inputSteps:
+            - name: setup_env
+          inputResources:
+            - name: src_dockerfile_base_image_python
+          integrations:
+            - name: artifactory_eu
+        execution:
+          onStart:
+            - cd ${res_src_dockerfile_base_image_python_resourcePath}/CI/jfrog
+            - ls -l && chmod +x init.sh
+#            - echo ${int_artifactory_eu_url/%artifactory/}
+            - ./init.sh -u  ${int_artifactory_eu_url/%artifactory/} -p ${int_artifactory_eu_apikey} 
+
+      - name: publish_python_base_image
+        type: DockerPush
+        configuration:
+          affinityGroup: python
+          targetRepository: ${dockerPushRepo}
+          autoPublishBuildInfo: true
+          forceXrayScan: false
+          inputSteps:
+            - name: build_python_base_image
+          integrations:
+            - name: artifactory_eu
+          outputResources:
+            - name: bi_base_image_docker
+
+      - name: promote_python_base_image
+        type: PromoteBuild
+        configuration:
+          targetRepository: ${dockerPromoteRepo}
+          includeDependencies: false
+          status: "DOCKER_SCAN_OK"
+          comment: "Xray scan passed succesfully"
+          copy: false
+          inputResources:
+            - name: bi_base_image_docker
+          inputSteps:
+            - name: publish_python_base_image
+          integrations:
+            - name: artifactory_eu
+          outputResources:
+            - name: bi_base_image_docker_promoted
+            - name: pb_base_image_python
+
   - name: app_python
     configuration:
       environmentVariables:
