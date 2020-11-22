@@ -3,7 +3,7 @@ pipelines:
     configuration:
       environmentVariables:
         readOnly:
-          myDockerRegistry: asgardian-docker.artifactory-eu-yannc3-0.soleng-emea-staging.jfrog.team:80
+          myDockerRegistry: asgardian-docker.artifactory-eu-yannc4-0.soleng-emea-staging.jfrog.team:80
           dockerPushRepo: asgardian-docker
           baseImageTag: 4.7.12-jfrog
     steps:
@@ -74,12 +74,15 @@ pipelines:
           outputResources:
             - name: bi_base_image_python_promoted
             - name: pb_base_image_python
+        execution:
+          onSuccess:
+            - write_output pb_base_image_python baseImgTag=${baseImageTag}
 
   - name: app_python
     configuration:
       environmentVariables:
         readOnly:
-          myDockerRegistry: asgardian-docker.artifactory-eu-yannc3-0.soleng-emea-staging.jfrog.team:80
+          myDockerRegistry: asgardian-docker.artifactory-eu-yannc4-0.soleng-emea-staging.jfrog.team:80
           pythonRepo: asgardian-python
           pythonPromoteRepo: asgardian-rc-python-local
     steps:
@@ -89,6 +92,8 @@ pipelines:
           affinityGroup: python
           runtime:
             type: host
+          inputResources:
+            - name: pb_base_image_python
         execution:
           onExecute:
             - sudo mkdir -p /etc/docker 
@@ -97,6 +102,8 @@ pipelines:
             - sudo systemctl restart docker
             - sudo cat /etc/docker/daemon.json
             - sudo systemctl status docker
+            - echo ${res_pb_base_image_python_baseImgTag}
+            - add_run_variables dockerBaseImgTag=${res_pb_base_image_python_baseImgTag}
       - name: build_app_python
         type: Bash
         configuration:
@@ -107,7 +114,7 @@ pipelines:
               custom:
                 registry: artifactory_eu
                 name: ${myDockerRegistry}/continuumio/miniconda3
-                tag: 4.7.12-jfrog
+                tag: ${dockerBaseImgTag}
                 sourceRepository: ${myDockerRegistry}
           inputSteps:
             - name: setup_env
@@ -121,15 +128,10 @@ pipelines:
           onStart:
             - export JFROG_CLI_BUILD_URL="${int_artifactory_eu_url/%artifactory/ui}/pipelines/myPipelines/${pipeline_name}/${run_number}/setup_env?branch=${res_src_code_app_python_branchName}"
             - cd ${res_src_code_app_python_resourcePath} && ls -l
-            - git branch && git checkout refactor
+            - git branch && git checkout ${res_src_code_app_python_branchName}
             - chmod u+x scripts/build.sh scripts/init.sh
             - scripts/init.sh -r ${pythonRepo} -s artifactory_eu
             - scripts/build.sh -i ${pipeline_name} -n ${run_number} -t release -r ${pythonRepo} -a artifactory_eu -s ${int_artifactory_eu_url} -m python-module
-          onComplete:
-            - echo -u${int_artifactory_eu_user}:${int_artifactory_eu_apikey}
-            - echo ${int_artifactory_eu_url/%artifactory/xray}/api/v1/binMgr/builds
-            - >
-              curl -u${int_artifactory_eu_user}:${int_artifactory_eu_apikey} -XPOST -H "Content-Type: application/json" -d "{\"names\":[\"${pipeline_name}\"]}" ${int_artifactory_eu_url/%artifactory/xray}/api/v1/binMgr/builds
 
       - name: scan_app_python
         type: XrayScan
@@ -138,8 +140,6 @@ pipelines:
           inputResources:
             - name: bi_app_python
               trigger: true
-          #  outputResources:
-          #     - name: scanned_python_BuildInfo
 
       - name: python_promote
         type: PromoteBuild
