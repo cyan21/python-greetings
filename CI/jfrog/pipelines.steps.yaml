@@ -3,9 +3,9 @@ pipelines:
     configuration:
       environmentVariables:
         readOnly:
-          myDockerRegistry: asgardian-docker.artifactory-eu-yannc4-0.soleng-emea-staging.jfrog.team:80
-          dockerPushRepo: asgardian-docker
-          baseImageTag: 4.7.12-jfrog
+          envVarDockerRegistry: asgardian-docker.artifactory-eu-yannc4-0.soleng-emea-staging.jfrog.team:80
+          envVarDockerPushRepo: asgardian-docker
+          envVarBaseImageTag: 4.7.12-jfrog
     steps:
       - name: setup_env
         type: Bash
@@ -17,7 +17,7 @@ pipelines:
           onExecute:
             - sudo mkdir -p /etc/docker 
             - > 
-              sudo jq -n  "{\"insecure-registries\": [\"${myDockerRegistry}\"]}" > /etc/docker/daemon.json
+              sudo jq -n  "{\"insecure-registries\": [\"${envVarDockerRegistry}\"]}" > /etc/docker/daemon.json
             - sudo systemctl restart docker
             - sudo cat /etc/docker/daemon.json
             - sudo systemctl status docker
@@ -28,8 +28,8 @@ pipelines:
           affinityGroup: python
           dockerFileName: Dockerfile
           dockerFileLocation: CI/jfrog/
-          dockerImageName: ${myDockerRegistry}/continuumio/miniconda3
-          dockerImageTag: ${baseImageTag}
+          dockerImageName: ${envVarDockerRegistry}/continuumio/miniconda3
+          dockerImageTag: ${envVarBaseImageTag}
           inputSteps:
             - name: setup_env
           inputResources:
@@ -40,14 +40,13 @@ pipelines:
           onStart:
             - cd ${res_src_dockerfile_base_image_python_resourcePath}/CI/jfrog
             - ls -l && chmod +x init.sh
-#            - echo ${int_artifactory_eu_url/%artifactory/}
             - ./init.sh -u  ${int_artifactory_eu_url/%artifactory/} -p ${int_artifactory_eu_apikey} 
 
       - name: publish_python_base_image
         type: DockerPush
         configuration:
           affinityGroup: python
-          targetRepository: ${dockerPushRepo}
+          targetRepository: ${envVarDockerPushRepo}
           autoPublishBuildInfo: true
           forceXrayScan: false
           inputSteps:
@@ -76,15 +75,15 @@ pipelines:
             - name: pb_base_image_python
         execution:
           onSuccess:
-            - write_output pb_base_image_python baseImgTag=${baseImageTag}
+            - write_output pb_base_image_python baseImgTag=${envVarBaseImageTag}
 
   - name: app_python
     configuration:
       environmentVariables:
         readOnly:
-          myDockerRegistry: asgardian-docker.artifactory-eu-yannc4-0.soleng-emea-staging.jfrog.team:80
-          pythonRepo: asgardian-python
-          pythonPromoteRepo: asgardian-rc-python-local
+          envVarDockerRegistry: asgardian-docker.artifactory-eu-yannc4-0.soleng-emea-staging.jfrog.team:80
+          envVarPythonRepo: asgardian-python
+          envVarPythonPromoteRepo: asgardian-rc-python-local
     steps:
       - name: setup_env
         type: Bash
@@ -98,12 +97,12 @@ pipelines:
           onExecute:
             - sudo mkdir -p /etc/docker 
             - > 
-              sudo jq -n  "{\"insecure-registries\": [\"${myDockerRegistry}\"]}" > /etc/docker/daemon.json
+              sudo jq -n  "{\"insecure-registries\": [\"${envVarDockerRegistry}\"]}" > /etc/docker/daemon.json
             - sudo systemctl restart docker
             - sudo cat /etc/docker/daemon.json
             - sudo systemctl status docker
             - echo ${res_pb_base_image_python_baseImgTag}
-            - add_run_variables dockerBaseImgTag=${res_pb_base_image_python_baseImgTag}
+            - add_run_variables runVarDockerBaseImgTag=${res_pb_base_image_python_baseImgTag}
       - name: build_app_python
         type: Bash
         configuration:
@@ -113,9 +112,9 @@ pipelines:
             image:
               custom:
                 registry: artifactory_eu
-                name: ${myDockerRegistry}/continuumio/miniconda3
-                tag: ${dockerBaseImgTag}
-                sourceRepository: ${myDockerRegistry}
+                name: ${envVarDockerRegistry}/continuumio/miniconda3
+                tag: ${runVarDockerBaseImgTag}
+                sourceRepository: ${envVarDockerRegistry}
           inputSteps:
             - name: setup_env
           inputResources:
@@ -130,8 +129,8 @@ pipelines:
             - cd ${res_src_code_app_python_resourcePath} && ls -l
             - git branch && git checkout ${res_src_code_app_python_branchName}
             - chmod u+x scripts/build.sh scripts/init.sh
-            - scripts/init.sh -r ${pythonRepo} -s artifactory_eu
-            - scripts/build.sh -i ${pipeline_name} -n ${run_number} -t release -r ${pythonRepo} -a artifactory_eu -s ${int_artifactory_eu_url} -m python-module
+            - scripts/init.sh -r ${envVarPythonRepo} -s artifactory_eu
+            - scripts/build.sh -i ${pipeline_name} -n ${run_number} -t release -r ${envVarPythonRepo} -a artifactory_eu -s ${int_artifactory_eu_url} -m python-module
 
       - name: scan_app_python
         type: XrayScan
@@ -144,7 +143,7 @@ pipelines:
       - name: python_promote
         type: PromoteBuild
         configuration:
-          targetRepository: ${pythonPromoteRepo}
+          targetRepository: ${envVarPythonPromoteRepo}
           includeDependencies: false
           status: Passed
           comment: Artifact passed Xray Scan
