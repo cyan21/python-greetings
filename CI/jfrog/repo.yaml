@@ -9,6 +9,12 @@ localRepositories:
     repoLayout: simple-default 
     xray:   
       enabled: true
+  asgardian-dev-docker-local:
+    type: docker
+    dockerApiVersion: V2
+    repoLayout: simple-default 
+    xray:   
+      enabled: true
   asgardian-release-docker-local:
     type: docker
     dockerApiVersion: V2
@@ -43,6 +49,7 @@ virtualRepositories:
     dockerApiVersion: V2
     repoLayout: simple-default 
     repositories:   
+      - asgardian-dev-docker-local
       - asgardian-release-docker-local
       - asgardian-dockerhub-remote
-    defaultDeploymentRepo: asgardian-release-docker-local
+    defaultDeploymentRepo: asgardian-dev-docker-local

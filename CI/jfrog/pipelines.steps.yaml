@@ -6,6 +6,7 @@ pipelines:
           envVarDockerRegistry: asgardian-docker.artifactory-eu-yannc4-0.soleng-emea-staging.jfrog.team:80
           envVarDockerPushRepo: asgardian-docker
           envVarBaseImageTag: 4.7.12-jfrog
+          envVarDockerPromoteRepo: asgardian-release-docker-local
     steps:
       - name: setup_env
         type: Bash
@@ -59,7 +60,7 @@ pipelines:
       - name: promote_python_base_image
         type: PromoteBuild
         configuration:
-          targetRepository: ${dockerPromoteRepo}
+          targetRepository: ${envVarDockerPromoteRepo}
           includeDependencies: false
           status: "DOCKER_SCAN_OK"
           comment: "Xray scan passed succesfully"
