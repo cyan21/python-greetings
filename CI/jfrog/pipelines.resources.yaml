@@ -29,7 +29,7 @@ resources:
   - name: pb_base_image_python
     type: PropertyBag
     configuration:
-      baseImageName: ${myDockerRegistry}/continuumio/miniconda3
+      baseImageName: ${envVarDockerRegistry}/continuumio/miniconda3
       baseImageTag: YYY
 
 # APP_PYTHON PIPELINE
