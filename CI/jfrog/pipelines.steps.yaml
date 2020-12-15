@@ -39,7 +39,8 @@ pipelines:
             - name: artifactory_eu
         execution:
           onStart:
-            - cd ${res_src_dockerfile_base_image_python_resourcePath}/CI/jfrog
+            -  jfrog --version
+            -  cd ${res_src_dockerfile_base_image_python_resourcePath}/CI/jfrog
             - ls -l && chmod +x init.sh
             - ./init.sh -u  ${int_artifactory_eu_url/%artifactory/} -p ${int_artifactory_eu_apikey} 
 
