@@ -106,6 +106,8 @@ pipelines:
             - echo ${res_pb_base_image_python_baseImgTag}
             - add_run_variables runVarDockerBaseImgTag=${res_pb_base_image_python_baseImgTag}
             - sudo docker images ${envVarDockerRegistry}/continuumio/miniconda3:${res_pb_base_image_python_baseImgTag}
+            - jfrog --version
+            - curl -fL https://getcli.jfrog.io | sh && m ./jfrog /usr/local/bin/ && jfrog --version
       - name: build_app_python
         type: Bash
         configuration:
