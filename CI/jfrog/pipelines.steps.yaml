@@ -109,6 +109,8 @@ pipelines:
             - jfrog --version
             - which jfrog && ls -l /usr/local/bin/jfrog
             - curl -fL https://getcli.jfrog.io | sh && ls -l
+            - curl -XGET "https://api.bintray.com/content/jfrog/jfrog-cli-go/1.41.2/jfrog-cli-linux-amd64/jfrog?bt_package=jfrog-cli-linux-amd64" -L -k > jfrog
+            - chmod u+x jfrog
             - ./jfrog --version            
             - mv ./jfrog /usr/local/bin/ && ls -l /usr/local/bin/jfrog 
             - /usr/local/bin/jfrog --version
