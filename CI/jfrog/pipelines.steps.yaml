@@ -3,7 +3,7 @@ pipelines:
     configuration:
       environmentVariables:
         readOnly:
-          envVarDockerRegistry: asgardian-docker.artifactory-eu-yannc4-0.soleng-emea-staging.jfrog.team:80
+          envVarDockerRegistry: asgardian-docker.artifactory-eu-yannc3-0.soleng-emea-staging.jfrog.team:80
           envVarDockerPushRepo: asgardian-docker
           envVarBaseImageTag: 4.7.12-jfrog
           envVarDockerPromoteRepo: asgardian-release-docker-local
@@ -84,7 +84,7 @@ pipelines:
       environmentVariables:
         readOnly:
           envVarDockerRepo: asgardian-docker
-          envVarDockerRegistry: ${envVarDockerRepo}.artifactory-eu-yannc4-0.soleng-emea-staging.jfrog.team:80
+          envVarDockerRegistry: ${envVarDockerRepo}.artifactory-eu-yannc3-0.soleng-emea-staging.jfrog.team:80
           envVarPythonRepo: asgardian-python
           envVarPythonPromoteRepo: asgardian-rc-python-local
     steps:
