@@ -60,7 +60,7 @@
     },
     "assigned_policies": [
         {
-            "name": "global",
+            "name": "global_sec",
             "type": "security"
         }
     ]
