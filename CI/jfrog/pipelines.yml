@@ -67,13 +67,6 @@ resources:
 
 pipelines:
   - name: {{ .Values.pythonProject.pipelineNameInit }}
-    # configuration:
-    #   environmentVariables:
-    #     readOnly:
-    #       envVarDockerRegistry: asgardian-docker.artifactory-eu-yannc3-0.soleng-emea-staging.jfrog.team:80
-    #       envVarDockerPushRepo: asgardian-docker
-    #       envVarBaseImageTag: 4.7.12-jfrog
-    #       envVarDockerPromoteRepo: asgardian-release-docker-local
     steps:
       - name: setup_env
         type: Bash
@@ -149,13 +142,6 @@ pipelines:
             - write_output {{ .Values.pythonInitResources.propertyBag.name }} baseImgTag={{ .Values.pythonProject.container.tag }}
 
   - name: {{ .Values.pythonProject.pipelineNamePythonApp }}
-    # configuration:
-    #   environmentVariables:
-    #     readOnly:
-    #       envVarDockerRepo: asgardian-docker
-    #       envVarDockerRegistry: ${envVarDockerRepo}.artifactory-eu-yannc3-0.soleng-emea-staging.jfrog.team:80
-    #       envVarPythonRepo: asgardian-python
-    #       envVarPythonPromoteRepo: asgardian-rc-python-local
     steps:
       - name: setup_env
         type: Bash
@@ -187,7 +173,7 @@ pipelines:
             image:
               custom:
                 registry: {{ .Values.pythonProject.artifactoryIntegration }}
-                name: "{{ .Values.pythonProject.container.registry }}/{{ .Values.pythonProject.container.registry }}"
+                name: "{{ .Values.pythonProject.container.registry }}/{{ .Values.pythonProject.container.image }}"
                 tag: ${runVarDockerBaseImgTag}
                 sourceRepository: {{ .Values.pythonProject.container.repoSource }}
           inputSteps:
