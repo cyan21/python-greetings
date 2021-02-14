@@ -1,0 +1,232 @@
+template: true
+valuesFilePath: values.yml
+
+resources:
+# PROJECT_INIT PIPELINE
+  - name: {{ .Values.pythonInitResources.gitRepo.name }}
+    type: GitRepo
+    configuration:
+      gitProvider: {{ .Values.pythonInitResources.gitRepo.gitProvider }}
+      path: {{ .Values.pythonInitResources.gitRepo.path }}
+      branches:
+        include: {{ .Values.pythonInitResources.gitRepo.branches.include }}
+      files:
+        include: {{ .Values.pythonInitResources.gitRepo.files.include }}
+      buildOn:
+         commit: false
+
+  - name: {{ .Values.pythonInitResources.buildInfo.resourceName }}
+    type: BuildInfo 
+    configuration:
+      sourceArtifactory: {{ .Values.pythonProject.artifactoryIntegration }}
+      buildName: {{ .Values.pythonInitResources.buildInfo.name }}
+      buildNumber: ${run_number} 
+
+  - name: {{ .Values.pythonInitResources.buildInfoPromoted.name }}
+    type: BuildInfo 
+    configuration:
+      sourceArtifactory: {{ .Values.pythonProject.artifactoryIntegration }}
+      buildName: {{ .Values.pythonInitResources.buildInfo.name }}
+      buildNumber: ${run_number} 
+
+  - name: {{ .Values.pythonInitResources.propertyBag.name }}
+    type: PropertyBag
+    configuration:
+      baseImageTag: YYY
+
+# APP_PYTHON PIPELINE
+
+  - name: {{ .Values.pythonAppResources.gitRepo.name }}
+    type: GitRepo
+    configuration:
+      gitProvider: {{ .Values.pythonAppResources.gitRepo.gitProvider }}
+      path: {{ .Values.pythonAppResources.gitRepo.path }}
+      branches:
+        include: {{ .Values.pythonAppResources.branches.include }}
+      buildOn:
+         commit: false
+
+  - name: {{ .Values.pythonAppResources.buildInfo.resourceName }}
+    type: BuildInfo 
+    configuration:
+      sourceArtifactory: {{ .Values.pythonProject.artifactoryIntegration }}
+      buildName: {{ .Values.pythonAppResources.buildInfo.name }}
+      buildNumber: ${run_number} 
+
+  - name: {{ .Values.pythonAppResources.buildInfoPromoted.resourceName }}
+    type: BuildInfo 
+    configuration:
+      sourceArtifactory: {{ .Values.pythonProject.artifactoryIntegration }}
+      buildName: {{ .Values.pythonAppResources.buildInfo.name }}
+      buildNumber: ${run_number} 
+
+  - name: {{ .Values.pythonAppResources.propertyBag.name }}
+    type: PropertyBag
+    configuration:
+      biNumber: XXX
+
+pipelines:
+  - name: {{ .Values.pythonProject.pipelineNameInit }}
+    # configuration:
+    #   environmentVariables:
+    #     readOnly:
+    #       envVarDockerRegistry: asgardian-docker.artifactory-eu-yannc3-0.soleng-emea-staging.jfrog.team:80
+    #       envVarDockerPushRepo: asgardian-docker
+    #       envVarBaseImageTag: 4.7.12-jfrog
+    #       envVarDockerPromoteRepo: asgardian-release-docker-local
+    steps:
+      - name: setup_env
+        type: Bash
+        configuration:
+          affinityGroup: python
+          runtime:
+            type: host
+        execution:
+          onExecute:
+            - sudo mkdir -p /etc/docker 
+            - > 
+              sudo jq -n  "{\"insecure-registries\": [\"{{ .Values.pythonProject.container.registry }}\"]}" > /etc/docker/daemon.json
+            - sudo systemctl restart docker
+            - sudo cat /etc/docker/daemon.json
+            - sudo systemctl status docker
+
+      - name: {{ .Values.pythonInitSteps.dockerBuild.name }}
+        type: DockerBuild
+        configuration:
+          affinityGroup: python
+          dockerFileName: {{ .Values.pythonInitSteps.dockerBuild.dockerFileName }}
+          dockerFileLocation: {{ .Values.pythonInitSteps.dockerBuild.dockerFileLocation }}
+          dockerImageName: "{{ .Values.pythonProject.container.registry }}/{{ .Values.pythonProject.container.image }}"
+          dockerImageTag: {{ .Values.pythonProject.container.tag }}
+          inputSteps:
+            - name: setup_env
+          inputResources:
+            - name: {{ .Values.pythonInitResources.gitRepo.name }}
+          integrations:
+            - name: {{ .Values.pythonProject.artifactoryIntegration }}
+        execution:
+          onStart:
+            - jfrog --version
+            - cd ${res_{{ .Values.pythonInitResources.gitRepo.name }}_resourcePath}/CI/jfrog
+            - git checkout ${res_{{ .Values.pythonInitResources.gitRepo.name }}_branchName}
+            - git branch
+            - ls -l && chmod +x init.sh
+            - ./init.sh -u  ${int_{{ .Values.pythonProject.artifactoryIntegration }}_url/%artifactory/} -p ${int_{{ .Values.pythonProject.artifactoryIntegration }}_apikey} 
+
+      - name: {{ .Values.pythonInitSteps.dockerPush.name }}
+        type: DockerPush
+        configuration:
+          affinityGroup: python
+          targetRepository: {{ .Values.pythonProject.container.repoSource }}
+          autoPublishBuildInfo: {{ .Values.pythonInitSteps.dockerPush.autoPublishBuildInfo }}
+          forceXrayScan: {{ .Values.pythonInitSteps.dockerPush.forceXrayScan }}
+          inputSteps:
+            - name: {{ .Values.pythonInitSteps.dockerBuild.name }}
+          integrations:
+            - name: {{ .Values.pythonProject.artifactoryIntegration }}
+          outputResources:
+            - name: {{ .Values.pythonInitResources.buildInfo.resourceName }}
+
+      - name: {{ .Values.pythonInitSteps.promotion.name }}
+        type: PromoteBuild
+        configuration:
+          targetRepository: {{ .Values.pythonProject.container.repoPromotion1 }}
+          includeDependencies: {{ .Values.pythonInitSteps.promotion.includeDependencies }}
+          status: {{ .Values.pythonInitSteps.promotion.status }}
+          comment: {{ .Values.pythonInitSteps.promotion.comment }}
+          copy: {{ .Values.pythonInitSteps.promotion.copy }}
+          inputResources:
+            - name: {{ .Values.pythonInitResources.buildInfo.resourceName }}
+          inputSteps:
+            - name: {{ .Values.pythonInitSteps.dockerPush.name }}
+          integrations:
+            - name: {{ .Values.pythonProject.artifactoryIntegration }}
+          outputResources:
+            - name: {{ .Values.pythonInitResources.buildInfoPromoted.resourceName }}
+            - name: {{ .Values.pythonInitResources.propertyBag.name }}
+        execution:
+          onSuccess:
+            - write_output {{ .Values.pythonInitResources.propertyBag.name }} baseImgTag={{ .Values.pythonProject.container.tag }}
+
+  - name: {{ .Values.pythonProject.pipelineNamePythonApp }}
+    # configuration:
+    #   environmentVariables:
+    #     readOnly:
+    #       envVarDockerRepo: asgardian-docker
+    #       envVarDockerRegistry: ${envVarDockerRepo}.artifactory-eu-yannc3-0.soleng-emea-staging.jfrog.team:80
+    #       envVarPythonRepo: asgardian-python
+    #       envVarPythonPromoteRepo: asgardian-rc-python-local
+    steps:
+      - name: setup_env
+        type: Bash
+        configuration:
+          affinityGroup: python
+          runtime:
+            type: host
+          inputResources:
+            - name: {{ .Values.pythonInitResources.propertyBag.name }}
+        execution:
+          onExecute:
+            - sudo mkdir -p /etc/docker 
+            - > 
+              sudo jq -n  "{\"insecure-registries\": [\"{{ .Values.pythonProject.container.registry }}\"]}" > /etc/docker/daemon.json
+            - sudo systemctl restart docker
+            - sudo cat /etc/docker/daemon.json
+            - sudo systemctl status docker
+            - echo ${res_{{ .Values.pythonInitResources.propertyBag.name }}_baseImgTag}
+            - add_run_variables runVarDockerBaseImgTag=${res_{{ .Values.pythonInitResources.propertyBag.name }}_baseImgTag}
+            - jfrog --version
+      - name: {{ .Values.pythonAppSteps.buildApp.name }}
+        type: Bash
+        configuration:
+          environmentVariables:
+            JFROG_CLI_LOG_LEVEL: DEBUG
+          affinityGroup: python
+          runtime:
+            type: image
+            image:
+              custom:
+                registry: {{ .Values.pythonProject.artifactoryIntegration }}
+                name: "{{ .Values.pythonProject.container.registry }}/{{ .Values.pythonProject.container.registry }}"
+                tag: ${runVarDockerBaseImgTag}
+                sourceRepository: {{ .Values.pythonProject.container.repoSource }}
+          inputSteps:
+            - name: setup_env
+          inputResources:
+            - name: {{ .Values.pythonAppResources.gitRepo.name }}
+          outputResources:
+            - name: {{ .Values.pythonAppResources.buildInfo.resourceName }}
+          integrations:
+            - name: {{ .Values.pythonProject.artifactoryIntegration }}
+        execution:
+          onStart:
+            - export JFROG_CLI_BUILD_URL="${int_{{ .Values.pythonProject.artifactoryIntegration }}_url/%artifactory/ui}/pipelines/myPipelines/{{ .Values.pythonProject.pipelineNamePythonApp }}/${run_number}/setup_env?branch=${res_{{ .Values.pythonAppResources.gitRepo.name }}_branchName}"
+            - cd ${res_{{ .Values.pythonAppResources.gitRepo.name }}_resourcePath} && ls -l
+            - git branch && git checkout ${res_{{ .Values.pythonAppResources.gitRepo.name }}_branchName}
+            - chmod u+x scripts/build.sh scripts/init.sh
+            - scripts/init.sh -r {{ .Values.pythonProject.container.repoSource }} -s {{ .Values.pythonProject.artifactoryIntegration }}
+            - scripts/build.sh -i {{ .Values.pythonProject.pipelineNamePythonApp }} -n ${run_number} -t release -r {{ .Values.pythonProject.container.repoSource }} -a {{ .Values.pythonProject.artifactoryIntegration }} -s ${int_{{ .Values.pythonProject.artifactoryIntegration }}_url} -m python-module
+
+      - name: {{ .Values.pythonAppSteps.xray.name }}
+        type: XrayScan
+        configuration:
+          failOnScan: false
+          inputResources:
+            - name: {{ .Values.pythonAppResources.buildInfo.resourceName }}
+              trigger: true
+
+      - name: {{ .Values.pythonAppSteps.promotion.name }}
+        type: PromoteBuild
+        configuration:
+          targetRepository: {{ .Values.pythonProject.container.repoPromotion1 }}
+          includeDependencies: {{ .Values.pythonAppSteps.promotion.includeDependencies }}
+          status: {{ .Values.pythonAppSteps.promotion.status }}
+          comment: {{ .Values.pythonAppSteps.promotion.comment }}
+          copy: {{ .Values.pythonAppSteps.promotion.copy }}
+          inputSteps:
+            - name: {{ .Values.pythonAppSteps.xray.name }}
+          inputResources:
+            - name: {{ .Values.pythonAppResources.buildInfo.resourceName }}
+          outputResources:
+            - name: {{ .Values.pythonAppResources.propertyBag.name }}
+            - name: {{ .Values.pythonAppResources.buildInfoPromoted.resourceName }}

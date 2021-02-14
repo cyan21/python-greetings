@@ -5,12 +5,12 @@ JFrog platform enabling Artifactory, Xray, Pipelines
 | Service | Type | Name | Description | 
 | ----------- | ----------- |----------- | ----------- |
 | Artifactory | Python virtual repo | asgardian-python | aggregate  dev local and remote | 
-| Artifactory | Python local repo   | asgardian-dev-python-local | | 
-| Artifactory | Python local repo   | asgardian-rc-python-local | for promotion | 
+| Artifactory | Python local repo   | asgardian-python-dev-local | | 
+| Artifactory | Python local repo   | asgardian-python-rc-local | for promotion | 
 | Artifactory | Python remote repo  | asgardian-pypi-remote | | 
 | Artifactory | Docker virtual repo | asgardian-python | aggregate  dev local and remote | 
-| Artifactory | Docker local repo   | asgardian-dev-docker-local | | 
-| Artifactory | Docker local repo   | asgardian-release-docker-local | | 
+| Artifactory | Docker local repo   | asgardian-docker-dev-local | | 
+| Artifactory | Docker local repo   | asgardian-docker-release-local | | 
 | Artifactory | Docker remote repo  | asgardian-pypi-remote | | 
 | Pipelines   | Github Integration | yann_github | pointing to https://github.com/cyan21 |
 | Pipelines   | Artifactory Integration | artifactory_eu | |

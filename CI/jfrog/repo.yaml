@@ -1,21 +1,21 @@
 localRepositories:   
-  asgardian-dev-python-local:
+  asgardian-python-dev-local:
     type: pypi
     repoLayout: simple-default 
     xray:   
       enabled: true
-  asgardian-rc-python-local:
+  asgardian-python-rc-local:
     type: pypi
     repoLayout: simple-default 
     xray:   
       enabled: true
-  asgardian-dev-docker-local:
+  asgardian-docker-dev-local:
     type: docker
     dockerApiVersion: V2
     repoLayout: simple-default 
     xray:   
       enabled: true
-  asgardian-release-docker-local:
+  asgardian-docker-release-local:
     type: docker
     dockerApiVersion: V2
     repoLayout: simple-default 
@@ -41,15 +41,15 @@ virtualRepositories:
     type: pypi
     repoLayout: simple-default 
     repositories:   
-      - asgardian-dev-python-local
+      - asgardian-python-dev-local
       - asgardian-pypi-remote
-    defaultDeploymentRepo: asgardian-dev-python-local
+    defaultDeploymentRepo: asgardian-python-dev-local
   asgardian-docker:
     type: docker
     dockerApiVersion: V2
     repoLayout: simple-default 
     repositories:   
-      - asgardian-dev-docker-local
-      - asgardian-release-docker-local
+      - asgardian-docker-dev-local
+      - asgardian-docker-release-local
       - asgardian-dockerhub-remote
-    defaultDeploymentRepo: asgardian-dev-docker-local
+    defaultDeploymentRepo: asgardian-docker-dev-local

@@ -1,0 +1,77 @@
+pythonProject:
+  pipelineNameInit: python_project_init
+  pipelineNamePythonApp:  python_app
+  # container image used for the build 
+  container:
+    registry: asgardian-docker.artifactory-eu-yannc4-0.soleng-emea-staging.jfrog.team:80
+    image: continuumio/miniconda3
+    tag: 4.7.12-jfrog
+    repoSource: asgardian-docker
+    repoPromotion1: asgardian-docker-release-local
+  python:
+    repoSource: asgardian-python
+    repoPromotion1: asgardian-python-rc-local
+  generic:
+    repoSource: dark-generic 
+    repoPromotion1: dark-generic-rc-local    
+  artifactoryIntegration: artifactory_eu
+
+pythonInitResources:
+  gitRepo: 
+    name: src_dockerfile_base_image_python
+    gitProvider: yann_github
+    path: cyan21/python-greetings
+    branches:
+      include: master
+    files:
+      include: CI/jfrog/Dockerfile
+  buildInfo:
+    resourceName: bi_base_image_python
+    name: python_base_image
+  buildInfoPromoted:
+    resourceName: bi_base_image_python_promoted
+  propertyBag:
+    name: pb_base_image_python
+
+pythonInitSteps:
+  dockerBuild:
+    name: build_python_base_image
+    dockerFileName: Dockerfile
+    dockerFileLocation: CI/jfrog/
+  dockerPush:
+    name: publish_python_base_image
+    autoPublishBuildInfo: true
+    forceXrayScan: false
+  promotion:
+    name: promote_python_base_image
+    includeDependencies: false
+    status: "DOCKER_SCAN_OK"
+    comment: "Xray scan passed succesfully"
+    copy: false
+
+pythonAppResources:
+  gitRepo: 
+    name: src_code_python_app
+    gitProvider: yann_github
+    path: cyan21/python-greetings
+    branches:
+      include: master
+  buildInfo:
+    resourceName: bi_python_app
+    name: python_app
+  buildInfoPromoted:
+    resourceName: bi_python_app_promoted
+  propertyBag:
+    name: pb_python_app
+
+pythonAppSteps:
+  buildApp:
+    name: build_python_app
+  xray:
+    name: scan_python_app
+  promotion:
+    name: promote_python_app
+    includeDependencies: false
+    status: XRAY_SCAN_OK
+    comment: "Artifact passed Xray Scan"
+    copy: false
