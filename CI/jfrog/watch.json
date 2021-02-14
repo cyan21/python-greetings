@@ -8,7 +8,7 @@
         "resources": [
             {
                 "type": "repository",
-                "name": "asgardian-dev-python-local",
+                "name": "asgardian-python-dev-local",
                 "bin_mgr_id": "unused",
                 "filters": [
                     {
@@ -19,7 +19,7 @@
             },
             {
                 "type": "repository",
-                "name": "asgardian-rc-python-local",
+                "name": "asgardian-python-rc-local",
                 "bin_mgr_id": "unused",
                 "filters": [
                     {
@@ -30,7 +30,7 @@
             },
             {
                 "type": "repository",
-                "name": "asgardian-release-docker-local",
+                "name": "asgardian-docker-release-local",
                 "bin_mgr_id": "unused",
                 "filters": [
                     {
@@ -54,7 +54,7 @@
             {
                 "type": "build",
                 "bin_mgr_id": "unused",
-                "name": "app_python"
+                "name": "python_app"
             }
         ]
     },
