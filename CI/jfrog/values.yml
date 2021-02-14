@@ -19,7 +19,7 @@ pythonInitResources:
     gitProvider: yann_github
     path: cyan21/python-greetings
     branches:
-      include: master
+      include: demo
     files:
       include: CI/jfrog/Dockerfile
   buildInfo:
@@ -52,7 +52,7 @@ pythonAppResources:
     gitProvider: yann_github
     path: cyan21/python-greetings
     branches:
-      include: master
+      include: demo
   buildInfo:
     resourceName: bi_python_app
     name: python_app
