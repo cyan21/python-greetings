@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 simplejson>=3.17.0
+=======
+simplejson==3.13.2
+>>>>>>> jfrog-ode-yannc3
 requests<=2.3.0
 pyyaml<=3.13
 fire==0.2.0

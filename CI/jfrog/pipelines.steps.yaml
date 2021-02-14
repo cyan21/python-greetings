@@ -1,0 +1,163 @@
+pipelines:
+  - name: python_project_init
+    configuration:
+      environmentVariables:
+        readOnly:
+          envVarDockerRegistry: asgardian-docker.artifactory-eu-yannc3-0.soleng-emea-staging.jfrog.team:80
+          envVarDockerPushRepo: asgardian-docker
+          envVarBaseImageTag: 4.7.12-jfrog
+          envVarDockerPromoteRepo: asgardian-release-docker-local
+    steps:
+      - name: setup_env
+        type: Bash
+        configuration:
+          affinityGroup: python
+          runtime:
+            type: host
+        execution:
+          onExecute:
+            - sudo mkdir -p /etc/docker 
+            - > 
+              sudo jq -n  "{\"insecure-registries\": [\"${envVarDockerRegistry}\"]}" > /etc/docker/daemon.json
+            - sudo systemctl restart docker
+            - sudo cat /etc/docker/daemon.json
+            - sudo systemctl status docker
+
+      - name: build_python_base_image
+        type: DockerBuild
+        configuration:
+          affinityGroup: python
+          dockerFileName: Dockerfile
+          dockerFileLocation: CI/jfrog/
+          dockerImageName: ${envVarDockerRegistry}/continuumio/miniconda3
+          dockerImageTag: ${envVarBaseImageTag}
+          inputSteps:
+            - name: setup_env
+          inputResources:
+            - name: src_dockerfile_base_image_python
+          integrations:
+            - name: artifactory_eu
+        execution:
+          onStart:
+            -  jfrog --version
+            -  cd ${res_src_dockerfile_base_image_python_resourcePath}/CI/jfrog
+            - ls -l && chmod +x init.sh
+            - ./init.sh -u  ${int_artifactory_eu_url/%artifactory/} -p ${int_artifactory_eu_apikey} 
+
+      - name: publish_python_base_image
+        type: DockerPush
+        configuration:
+          affinityGroup: python
+          targetRepository: ${envVarDockerPushRepo}
+          autoPublishBuildInfo: true
+          forceXrayScan: false
+          inputSteps:
+            - name: build_python_base_image
+          integrations:
+            - name: artifactory_eu
+          outputResources:
+            - name: bi_base_image_python
+
+      - name: promote_python_base_image
+        type: PromoteBuild
+        configuration:
+          targetRepository: ${envVarDockerPromoteRepo}
+          includeDependencies: false
+          status: "DOCKER_SCAN_OK"
+          comment: "Xray scan passed succesfully"
+          copy: false
+          inputResources:
+            - name: bi_base_image_python
+          inputSteps:
+            - name: publish_python_base_image
+          integrations:
+            - name: artifactory_eu
+          outputResources:
+            - name: bi_base_image_python_promoted
+            - name: pb_base_image_python
+        execution:
+          onSuccess:
+            - write_output pb_base_image_python baseImgTag=${envVarBaseImageTag}
+
+  - name: app_python
+    configuration:
+      environmentVariables:
+        readOnly:
+          envVarDockerRepo: asgardian-docker
+          envVarDockerRegistry: ${envVarDockerRepo}.artifactory-eu-yannc3-0.soleng-emea-staging.jfrog.team:80
+          envVarPythonRepo: asgardian-python
+          envVarPythonPromoteRepo: asgardian-rc-python-local
+    steps:
+      - name: setup_env
+        type: Bash
+        configuration:
+          affinityGroup: python
+          runtime:
+            type: host
+          inputResources:
+            - name: pb_base_image_python
+        execution:
+          onExecute:
+            - sudo mkdir -p /etc/docker 
+            - > 
+              sudo jq -n  "{\"insecure-registries\": [\"${envVarDockerRegistry}\"]}" > /etc/docker/daemon.json
+            - sudo systemctl restart docker
+            - sudo cat /etc/docker/daemon.json
+            - sudo systemctl status docker
+            - echo ${res_pb_base_image_python_baseImgTag}
+            - add_run_variables runVarDockerBaseImgTag=${res_pb_base_image_python_baseImgTag}
+            - jfrog --version
+      - name: build_app_python
+        type: Bash
+        configuration:
+          environmentVariables:
+            JFROG_CLI_LOG_LEVEL: DEBUG
+          affinityGroup: python
+          runtime:
+            type: image
+            image:
+              custom:
+                registry: artifactory_eu
+                name: ${envVarDockerRegistry}/continuumio/miniconda3
+                tag: ${runVarDockerBaseImgTag}
+                sourceRepository: ${envVarDockerRepo}
+          inputSteps:
+            - name: setup_env
+          inputResources:
+            - name: src_code_app_python
+          outputResources:
+            - name: bi_app_python
+          integrations:
+            - name: artifactory_eu
+        execution:
+          onStart:
+            - export JFROG_CLI_BUILD_URL="${int_artifactory_eu_url/%artifactory/ui}/pipelines/myPipelines/${pipeline_name}/${run_number}/setup_env?branch=${res_src_code_app_python_branchName}"
+            - cd ${res_src_code_app_python_resourcePath} && ls -l
+            - git branch && git checkout ${res_src_code_app_python_branchName}
+            - chmod u+x scripts/build.sh scripts/init.sh
+            - scripts/init.sh -r ${envVarPythonRepo} -s artifactory_eu
+            - scripts/build.sh -i ${pipeline_name} -n ${run_number} -t release -r ${envVarPythonRepo} -a artifactory_eu -s ${int_artifactory_eu_url} -m python-module
+
+      - name: scan_app_python
+        type: XrayScan
+        configuration:
+          failOnScan: false
+          inputResources:
+            - name: bi_app_python
+              trigger: true
+
+      - name: python_promote
+        type: PromoteBuild
+        configuration:
+          targetRepository: ${envVarPythonPromoteRepo}
+          includeDependencies: false
+          status: Passed
+          comment: Artifact passed Xray Scan
+          copy: false
+          inputSteps:
+            - name: scan_app_python
+          inputResources:
+            - name: bi_app_python
+          outputResources:
+            - name: pb_app_python
+            - name: bi_app_python_promoted_staging

@@ -1,0 +1,55 @@
+localRepositories:   
+  asgardian-dev-python-local:
+    type: pypi
+    repoLayout: simple-default 
+    xray:   
+      enabled: true
+  asgardian-rc-python-local:
+    type: pypi
+    repoLayout: simple-default 
+    xray:   
+      enabled: true
+  asgardian-dev-docker-local:
+    type: docker
+    dockerApiVersion: V2
+    repoLayout: simple-default 
+    xray:   
+      enabled: true
+  asgardian-release-docker-local:
+    type: docker
+    dockerApiVersion: V2
+    repoLayout: simple-default 
+    xray:   
+      enabled: true
+remoteRepositories: 
+  asgardian-pypi-remote:
+    type: pypi 
+    url: https://files.pythonhosted.org 
+    repoLayout: simple-default 
+    xray:   
+      enabled: true
+  asgardian-dockerhub-remote:
+    type: docker 
+    url: https://registry-1.docker.io/
+    dockerApiVersion: V2
+    repoLayout: simple-default 
+    enableTokenAuthentication: true
+    xray:   
+      enabled: true
+virtualRepositories: 
+  asgardian-python:
+    type: pypi
+    repoLayout: simple-default 
+    repositories:   
+      - asgardian-dev-python-local
+      - asgardian-pypi-remote
+    defaultDeploymentRepo: asgardian-dev-python-local
+  asgardian-docker:
+    type: docker
+    dockerApiVersion: V2
+    repoLayout: simple-default 
+    repositories:   
+      - asgardian-dev-docker-local
+      - asgardian-release-docker-local
+      - asgardian-dockerhub-remote
+    defaultDeploymentRepo: asgardian-dev-docker-local

@@ -20,7 +20,11 @@ ENV JFROG_CLI_OFFER_CONFIG=false
 
 WORKDIR /tmp
 
+<<<<<<< HEAD
 RUN apt-get install -y curl git
+=======
+RUN apt-get update && apt-get install -y curl git
+>>>>>>> jfrog-ode-yannc3
 
 RUN curl -fL https://getcli.jfrog.io | sh &&  chmod 755 jfrog &&  mv jfrog /usr/local/bin/
 

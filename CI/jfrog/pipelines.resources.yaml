@@ -1,0 +1,64 @@
+resources:
+# PROJECT_INIT PIPELINE
+  - name: src_dockerfile_base_image_python
+    type: GitRepo
+    configuration:
+      gitProvider: yann_github
+      path: cyan21/python-greetings
+      files:
+        include: CI/jfrog/Dockerfile
+      branches:
+        include: jfrog-ode-yannc3
+      buildOn:
+         commit: false
+
+  - name: bi_base_image_python 
+    type: BuildInfo 
+    configuration:
+      sourceArtifactory: artifactory_eu
+      buildName: python_base_image
+      buildNumber: ${run_number} 
+
+  - name: bi_base_image_python_promoted
+    type: BuildInfo 
+    configuration:
+      sourceArtifactory: artifactory_eu
+      buildName: python_base_image
+      buildNumber: ${run_number} 
+
+  - name: pb_base_image_python
+    type: PropertyBag
+    configuration:
+      baseImageName: ${envVarDockerRegistry}/continuumio/miniconda3
+      baseImageTag: YYY
+
+# APP_PYTHON PIPELINE
+
+  - name: src_code_app_python
+    type: GitRepo
+    configuration:
+      gitProvider: yann_github
+      path: cyan21/python-greetings
+      branches:
+        include: jfrog-ode-yannc3
+      buildOn:
+         commit: false
+
+  - name: bi_app_python 
+    type: BuildInfo 
+    configuration:
+      sourceArtifactory: artifactory_eu
+      buildName: ${pipeline_name} 
+      buildNumber: ${run_number} 
+
+  - name: bi_app_python_promoted_staging
+    type: BuildInfo 
+    configuration:
+      sourceArtifactory: artifactory_eu
+      buildName: ${pipeline_name} 
+      buildNumber: ${run_number} 
+
+  - name: pb_app_python
+    type: PropertyBag
+    configuration:
+      biNumber: XXX
