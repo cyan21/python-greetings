@@ -191,7 +191,7 @@ pipelines:
             - git checkout {{ .Values.pythonAppResources.gitRepo.branches.include }} && git branch
             - cat requirements.txt
             - chmod u+x scripts/build.sh scripts/init.sh
-            - scripts/init.sh -r {{ .Values.pythonProject.container.repoSource }} -s {{ .Values.pythonProject.artifactoryIntegration }}
+            - scripts/init.sh -r {{ .Values.pythonProject.python.repoSource }} -s {{ .Values.pythonProject.artifactoryIntegration }}
             - scripts/build.sh -i {{ .Values.pythonProject.pipelineNamePythonApp }} -n ${run_number} -t release -r {{ .Values.pythonProject.container.repoSource }} -a {{ .Values.pythonProject.artifactoryIntegration }} -s ${int_{{ .Values.pythonProject.artifactoryIntegration }}_url} -m python-module
 
       - name: {{ .Values.pythonAppSteps.xray.name }}
