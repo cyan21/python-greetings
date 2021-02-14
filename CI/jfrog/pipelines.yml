@@ -188,7 +188,8 @@ pipelines:
           onStart:
             - export JFROG_CLI_BUILD_URL="${int_{{ .Values.pythonProject.artifactoryIntegration }}_url/%artifactory/ui}/pipelines/myPipelines/{{ .Values.pythonProject.pipelineNamePythonApp }}/${run_number}/setup_env?branch=${res_{{ .Values.pythonAppResources.gitRepo.name }}_branchName}"
             - cd ${res_{{ .Values.pythonAppResources.gitRepo.name }}_resourcePath} && ls -l
-            - git branch && git checkout ${res_{{ .Values.pythonAppResources.gitRepo.name }}_branchName}
+            - git checkout {{ .Values.pythonAppResources.gitRepo.branches.include }} && git branch
+            - cat requirements.txt
             - chmod u+x scripts/build.sh scripts/init.sh
             - scripts/init.sh -r {{ .Values.pythonProject.container.repoSource }} -s {{ .Values.pythonProject.artifactoryIntegration }}
             - scripts/build.sh -i {{ .Values.pythonProject.pipelineNamePythonApp }} -n ${run_number} -t release -r {{ .Values.pythonProject.container.repoSource }} -a {{ .Values.pythonProject.artifactoryIntegration }} -s ${int_{{ .Values.pythonProject.artifactoryIntegration }}_url} -m python-module
