@@ -9,7 +9,7 @@ usage() {
 
 JPD_URL="http://artifactory-eu-yannc3-0.soleng-emea-staging.jfrog.team"
 ADMIN_USER="admin"
-BUILD_NAMES="app_python"  #list with comma as a separator
+BUILD_NAMES="python_app"  #list with comma as a separator
 
 while getopts "u:l:p:" option; do
     case "${option}" in
