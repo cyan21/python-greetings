@@ -10,10 +10,7 @@ pythonProject:
     repoPromotion1: asgardian-docker-release-local
   python:
     repoSource: asgardian-python
-    repoPromotion1: asgardian-python-rc-local
-  generic:
-    repoSource: dark-generic 
-    repoPromotion1: dark-generic-rc-local    
+    repoPromotion1: asgardian-python-rc-local 
   artifactoryIntegration: artifactory_eu
 
 pythonInitResources:

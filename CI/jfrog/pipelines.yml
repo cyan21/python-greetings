@@ -22,7 +22,7 @@ resources:
       buildName: {{ .Values.pythonInitResources.buildInfo.name }}
       buildNumber: ${run_number} 
 
-  - name: {{ .Values.pythonInitResources.buildInfoPromoted.name }}
+  - name: {{ .Values.pythonInitResources.buildInfoPromoted.resourceName }}
     type: BuildInfo 
     configuration:
       sourceArtifactory: {{ .Values.pythonProject.artifactoryIntegration }}
@@ -42,7 +42,7 @@ resources:
       gitProvider: {{ .Values.pythonAppResources.gitRepo.gitProvider }}
       path: {{ .Values.pythonAppResources.gitRepo.path }}
       branches:
-        include: {{ .Values.pythonAppResources.branches.include }}
+        include: {{ .Values.pythonAppResources.gitRepo.branches.include }}
       buildOn:
          commit: false
 
