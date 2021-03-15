@@ -1,0 +1,139 @@
+pipeline {
+    agent {
+        kubernetes {
+            yaml """\
+            apiVersion: v1
+            kind: Pod
+            metadata:
+              labels:
+                some-label: some-label-value
+            spec:
+              containers:
+              - name: python
+                image: python:rc-alpine3.13
+                command:
+                - cat
+                tty: true
+            """.stripIndent()
+        }
+    }
+
+    environment {
+        ARTY_CREDS=credentials('jenkins_rt')
+//        ADM_CREDS=credentials('admin_art')
+        ART_ID="artifactory-eu"
+    }
+
+    parameters {
+        string(name: 'JPD_URL', defaultValue: 'http://artifactory-eu-yannc4-0.soleng-emea-staging.jfrog.team', description: '')
+        string(name: 'PYTHON_REPO', defaultValue: 'asgardian-python', description: '')
+        string(name: 'PROMOTE_REPO', defaultValue: 'asgardian-python-rc-local', description: '')
+        booleanParam(name: 'FAIL_BUILD', defaultValue: false, description: 'Xray scan')
+    }
+    
+    stages {
+
+        stage ('Get Source code') {
+            steps {
+                git branch: 'demo', url: "https://github.com/cyan21/python-greetings.git"
+            }
+        }
+  
+        stage ('Artifactory configuration') {
+            steps {
+                container('python') {
+                    rtServer (
+                        id: env.ART_ID,
+                        url: "${params.JPD_URL}/artifactory",
+                        credentialsId: 'jenkins_rt'
+                    )
+    
+                    rtPipResolver (
+                        id: 'ART_RESOLVER',
+                        serverId: env.ART_ID,
+                        repo: params.PYTHON_REPO
+                    )
+    
+                    rtBuildInfo (
+                        captureEnv: true,
+                        excludeEnvPatterns: ['*private*', 'internal-*', 'ADM*'],
+     
+                        // buildName: 'my-build',
+                        // buildNumber: '20'
+                    )
+
+                    // Xray : reference  build info
+                    // sh "curl -XPOST -u${ADM_CREDS_USR}:${ADM_CREDS_PSW}  -H \"Content-Type: application/json\" -d @payload.json ${JPD_URL}/xray/api/v1/binMgr/builds"
+
+                }
+            }
+        }
+
+        stage ('Build Python package') {
+            steps {
+                
+                container('python') {
+                    sh "apk update && apk add openjdk11"
+                    
+                    rtPipInstall (
+                        resolverId: "ART_RESOLVER",
+                        args: "-r requirements.txt --trusted-host artifactory-eu-yannc4-0.soleng-emea-staging.jfrog.team",
+                        module: 'myDeps'
+                    )
+                    
+                    // build package
+                    sh "python setup.py sdist bdist_wheel -d release"
+
+                }
+            }
+        }
+
+        stage ('Upload artifact & publish build info') {
+            steps {   
+                rtUpload (
+                    serverId: env.ART_ID,
+                    module: 'myPythonLib',
+                    spec:
+                        """{
+                          "files": [
+                            {
+                              "pattern": "${env.WORKSPACE}/release/*",
+                              "target": "${params.PYTHON_REPO}/jenkins/"
+                            }
+                         ]
+                        }"""
+                )
+
+                rtPublishBuildInfo (
+                    serverId: env.ART_ID
+                )
+            }
+        }
+
+        stage ('Xray scan') {
+            steps {
+                xrayScan (
+                    serverId: env.ART_ID,
+                    failBuild: params.FAIL_BUILD
+                )
+            }
+        }
+      
+        stage ('Promotion') {
+            steps {
+                rtPromote (
+                    //Mandatory parameter
+                    serverId: env.ART_ID,
+                    targetRepo: params.PROMOTE_REPO,
+
+                    //Optional parameters
+                    comment: 'passed Xray scan',
+                    status: 'XRAY_OK',
+                    includeDependencies: false,
+                    failFast: true,
+                    copy: false
+                )
+            }
+        }
+    }
+}
