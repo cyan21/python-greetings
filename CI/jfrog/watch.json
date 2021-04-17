@@ -1,7 +1,7 @@
 {
     "general_data": {
         "name": "asgardian",
-        "description": "This is a new watch created using API V2",
+        "description": "Project watch ",
         "active": true
     },
     "project_resources": {
