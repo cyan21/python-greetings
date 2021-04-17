@@ -28,6 +28,7 @@ fi
 creds="-u$ADMIN_USER:$ADMIN_PASS"
 
 # create repo
+echo "[ARTIFACTORY] $JPD_URL/artifactory/api/system/configuration"
 echo "[ARTIFACTORY] creating repositories ..."
 curl -XPATCH $creds \
     -H "Content-Type: application/yaml" -T repo.yaml \
