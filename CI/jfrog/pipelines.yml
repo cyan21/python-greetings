@@ -106,7 +106,7 @@ pipelines:
             - git checkout ${res_{{ .Values.pythonInitResources.gitRepo.name }}_branchName}
             - git branch
             - ls -l && chmod +x init.sh
-            - ./init.sh -u  ${int_{{ .Values.pythonProject.artifactoryIntegration }}_url/%artifactory/} -p ${int_{{ .Values.pythonProject.artifactoryIntegration }}_apikey} 
+            - ./init.sh -u  ${int_{{ .Values.pythonProject.artifactoryIntegration }}_url%/artifactory} -p ${int_{{ .Values.pythonProject.artifactoryIntegration }}_apikey} 
 
       - name: {{ .Values.pythonInitSteps.dockerPush.name }}
         type: DockerPush
