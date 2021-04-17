@@ -21,7 +21,7 @@ pythonInitResources:
     branches:
       include: demo
     files:
-      include: CI/jfrog/Dockerfile
+      include: ^CI\/.+
   buildInfo:
     resourceName: bi_base_image_python
     name: python_base_image
@@ -53,6 +53,8 @@ pythonAppResources:
     path: cyan21/python-greetings
     branches:
       include: demo
+    files:
+      exclude: ^CI\/.+ 
   buildInfo:
     resourceName: bi_python_app
     name: python_app

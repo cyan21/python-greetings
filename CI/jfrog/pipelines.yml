@@ -13,7 +13,7 @@ resources:
       files:
         include: {{ .Values.pythonInitResources.gitRepo.files.include }}
       buildOn:
-         commit: false
+         commit: true
 
   - name: {{ .Values.pythonInitResources.buildInfo.resourceName }}
     type: BuildInfo 
@@ -43,8 +43,10 @@ resources:
       path: {{ .Values.pythonAppResources.gitRepo.path }}
       branches:
         include: {{ .Values.pythonAppResources.gitRepo.branches.include }}
+      files:
+        exclude: {{ .Values.pythonAppResources.gitRepo.files.exclude }}
       buildOn:
-         commit: false
+         commit: true
 
   - name: {{ .Values.pythonAppResources.buildInfo.resourceName }}
     type: BuildInfo 
