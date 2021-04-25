@@ -3,7 +3,7 @@ pythonProject:
   pipelineNamePythonApp:  python_app
   # container image used for the build 
   container:
-    registry: asgardian-docker.artifactory-eu-yannc4-0.soleng-emea-staging.jfrog.team:80
+    registry: asgardian-docker.yann-swampup.dev.aws.devopsacc.team
     image: continuumio/miniconda3
     tag: 4.7.12-jfrog
     repoSource: asgardian-docker
@@ -19,9 +19,9 @@ pythonInitResources:
     gitProvider: yann_github
     path: cyan21/python-greetings
     branches:
-      include: master
+      include: demo
     files:
-      include: CI/jfrog/Dockerfile
+      include: ^CI\/.+
   buildInfo:
     resourceName: bi_base_image_python
     name: python_base_image
@@ -52,7 +52,9 @@ pythonAppResources:
     gitProvider: yann_github
     path: cyan21/python-greetings
     branches:
-      include: master
+      include: demo
+    files:
+      exclude: ^CI\/.+ 
   buildInfo:
     resourceName: bi_python_app
     name: python_app

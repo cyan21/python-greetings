@@ -13,7 +13,7 @@ resources:
       files:
         include: {{ .Values.pythonInitResources.gitRepo.files.include }}
       buildOn:
-         commit: false
+         commit: true
 
   - name: {{ .Values.pythonInitResources.buildInfo.resourceName }}
     type: BuildInfo 
@@ -43,8 +43,10 @@ resources:
       path: {{ .Values.pythonAppResources.gitRepo.path }}
       branches:
         include: {{ .Values.pythonAppResources.gitRepo.branches.include }}
+      files:
+        exclude: {{ .Values.pythonAppResources.gitRepo.files.exclude }}
       buildOn:
-         commit: false
+         commit: true
 
   - name: {{ .Values.pythonAppResources.buildInfo.resourceName }}
     type: BuildInfo 
@@ -68,20 +70,20 @@ resources:
 pipelines:
   - name: {{ .Values.pythonProject.pipelineNameInit }}
     steps:
-      - name: setup_env
-        type: Bash
-        configuration:
-          affinityGroup: python
-          runtime:
-            type: host
-        execution:
-          onExecute:
-            - sudo mkdir -p /etc/docker 
-            - > 
-              sudo jq -n  "{\"insecure-registries\": [\"{{ .Values.pythonProject.container.registry }}\"]}" > /etc/docker/daemon.json
-            - sudo systemctl restart docker
-            - sudo cat /etc/docker/daemon.json
-            - sudo systemctl status docker
+      # - name: setup_env
+      #   type: Bash
+      #   configuration:
+      #     affinityGroup: python
+      #     runtime:
+      #       type: host
+      #   execution:
+      #     onExecute:
+      #       - sudo mkdir -p /etc/docker 
+      #       - > 
+      #         sudo jq -n  "{\"insecure-registries\": [\"{{ .Values.pythonProject.container.registry }}\"]}" > /etc/docker/daemon.json
+      #       - sudo systemctl restart docker
+      #       - sudo cat /etc/docker/daemon.json
+      #       - sudo systemctl status docker
 
       - name: {{ .Values.pythonInitSteps.dockerBuild.name }}
         type: DockerBuild
@@ -91,8 +93,8 @@ pipelines:
           dockerFileLocation: {{ .Values.pythonInitSteps.dockerBuild.dockerFileLocation }}
           dockerImageName: "{{ .Values.pythonProject.container.registry }}/{{ .Values.pythonProject.container.image }}"
           dockerImageTag: {{ .Values.pythonProject.container.tag }}
-          inputSteps:
-            - name: setup_env
+          # inputSteps:
+          #   - name: setup_env
           inputResources:
             - name: {{ .Values.pythonInitResources.gitRepo.name }}
           integrations:
@@ -104,7 +106,7 @@ pipelines:
             - git checkout ${res_{{ .Values.pythonInitResources.gitRepo.name }}_branchName}
             - git branch
             - ls -l && chmod +x init.sh
-            - ./init.sh -u  ${int_{{ .Values.pythonProject.artifactoryIntegration }}_url/%artifactory/} -p ${int_{{ .Values.pythonProject.artifactoryIntegration }}_apikey} 
+            - ./init.sh -u  ${int_{{ .Values.pythonProject.artifactoryIntegration }}_url%/artifactory} -p ${int_{{ .Values.pythonProject.artifactoryIntegration }}_apikey} 
 
       - name: {{ .Values.pythonInitSteps.dockerPush.name }}
         type: DockerPush
@@ -153,12 +155,12 @@ pipelines:
             - name: {{ .Values.pythonInitResources.propertyBag.name }}
         execution:
           onExecute:
-            - sudo mkdir -p /etc/docker 
-            - > 
-              sudo jq -n  "{\"insecure-registries\": [\"{{ .Values.pythonProject.container.registry }}\"]}" > /etc/docker/daemon.json
-            - sudo systemctl restart docker
-            - sudo cat /etc/docker/daemon.json
-            - sudo systemctl status docker
+            # - sudo mkdir -p /etc/docker 
+            # - > 
+            #   sudo jq -n  "{\"insecure-registries\": [\"{{ .Values.pythonProject.container.registry }}\"]}" > /etc/docker/daemon.json
+            # - sudo systemctl restart docker
+            # - sudo cat /etc/docker/daemon.json
+            # - sudo systemctl status docker
             - echo ${res_{{ .Values.pythonInitResources.propertyBag.name }}_baseImgTag}
             - add_run_variables runVarDockerBaseImgTag=${res_{{ .Values.pythonInitResources.propertyBag.name }}_baseImgTag}
             - jfrog --version
@@ -189,6 +191,7 @@ pipelines:
             - export JFROG_CLI_BUILD_URL="${int_{{ .Values.pythonProject.artifactoryIntegration }}_url/%artifactory/ui}/pipelines/myPipelines/{{ .Values.pythonProject.pipelineNamePythonApp }}/${run_number}/setup_env?branch=${res_{{ .Values.pythonAppResources.gitRepo.name }}_branchName}"
             - cd ${res_{{ .Values.pythonAppResources.gitRepo.name }}_resourcePath} && ls -l
             - git checkout {{ .Values.pythonAppResources.gitRepo.branches.include }} && git branch
+            - cat requirements.txt
             - chmod u+x scripts/build.sh scripts/init.sh
             - scripts/init.sh -r {{ .Values.pythonProject.python.repoSource }} -s {{ .Values.pythonProject.artifactoryIntegration }}
             - scripts/build.sh -i {{ .Values.pythonProject.pipelineNamePythonApp }} -n ${run_number} -t release -r {{ .Values.pythonProject.container.repoSource }} -a {{ .Values.pythonProject.artifactoryIntegration }} -s ${int_{{ .Values.pythonProject.artifactoryIntegration }}_url} -m python-module
