@@ -3,14 +3,14 @@ pythonProject:
   pipelineNamePythonApp:  python_app
   # container image used for the build 
   container:
-    registry: asgardian-docker.yann-swampup.dev.aws.devopsacc.team
+    registry: platform-us.staging.gcp.devopsacc.team
     image: continuumio/miniconda3
     tag: 4.7.12-jfrog
-    repoSource: asgardian-docker
-    repoPromotion1: asgardian-docker-release-local
+    repoSource: mcy-docker
+    repoPromotion1: mcy-docker-release-local
   python:
-    repoSource: asgardian-python
-    repoPromotion1: asgardian-python-rc-local 
+    repoSource: mcy-python
+    repoPromotion1: mcy-python-rc-local 
   artifactoryIntegration: artifactory_eu
 
 pythonInitResources:
@@ -19,9 +19,9 @@ pythonInitResources:
     gitProvider: yann_github
     path: cyan21/python-greetings
     branches:
-      include: demo
+      include: soleng-stg
     files:
-      include: ^CI\/.+
+      include: ^CI\/.+  
   buildInfo:
     resourceName: bi_base_image_python
     name: python_base_image
@@ -52,7 +52,7 @@ pythonAppResources:
     gitProvider: yann_github
     path: cyan21/python-greetings
     branches:
-      include: demo
+      include: soleng-stg
     files:
       exclude: ^CI\/.+ 
   buildInfo:

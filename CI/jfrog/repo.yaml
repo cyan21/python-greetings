@@ -1,34 +1,34 @@
 localRepositories:   
-  asgardian-python-dev-local:
+  mcy-python-dev-local:
     type: pypi
     repoLayout: simple-default 
     xray:   
       enabled: true
-  asgardian-python-rc-local:
+  mcy-python-rc-local:
     type: pypi
     repoLayout: simple-default 
     xray:   
       enabled: true
-  asgardian-docker-dev-local:
+  mcy-docker-dev-local:
     type: docker
     dockerApiVersion: V2
     repoLayout: simple-default 
     xray:   
       enabled: true
-  asgardian-docker-release-local:
+  mcy-docker-release-local:
     type: docker
     dockerApiVersion: V2
     repoLayout: simple-default 
     xray:   
       enabled: true
 remoteRepositories: 
-  asgardian-pypi-remote:
+  mcy-pypi-remote:
     type: pypi 
     url: https://files.pythonhosted.org 
     repoLayout: simple-default 
     xray:   
       enabled: true
-  asgardian-dockerhub-remote:
+  mcy-dockerhub-remote:
     type: docker 
     url: https://registry-1.docker.io/
     dockerApiVersion: V2
@@ -37,19 +37,19 @@ remoteRepositories:
     xray:   
       enabled: true
 virtualRepositories: 
-  asgardian-python:
+  mcy-python:
     type: pypi
     repoLayout: simple-default 
     repositories:   
-      - asgardian-python-dev-local
-      - asgardian-pypi-remote
-    defaultDeploymentRepo: asgardian-python-dev-local
-  asgardian-docker:
+      - mcy-python-dev-local
+      - mcy-pypi-remote
+    defaultDeploymentRepo: mcy-python-dev-local
+  mcy-docker:
     type: docker
     dockerApiVersion: V2
     repoLayout: simple-default 
     repositories:   
-      - asgardian-docker-dev-local
-      - asgardian-docker-release-local
-      - asgardian-dockerhub-remote
-    defaultDeploymentRepo: asgardian-docker-dev-local
+      - mcy-docker-dev-local
+      - mcy-docker-release-local
+      - mcy-dockerhub-remote
+    defaultDeploymentRepo: mcy-docker-dev-local

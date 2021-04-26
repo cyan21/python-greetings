@@ -1,6 +1,6 @@
 {
     "general_data": {
-        "name": "asgardian",
+        "name": "mercury",
         "description": "Project watch description",
         "active": true
     },
@@ -8,7 +8,7 @@
         "resources": [
             {
                 "type": "repository",
-                "name": "asgardian-python-dev-local",
+                "name": "mcy-python-dev-local",
                 "bin_mgr_id": "unused",
                 "filters": [
                     {
@@ -19,7 +19,7 @@
             },
             {
                 "type": "repository",
-                "name": "asgardian-python-rc-local",
+                "name": "mcy-python-rc-local",
                 "bin_mgr_id": "unused",
                 "filters": [
                     {
@@ -30,7 +30,7 @@
             },
             {
                 "type": "repository",
-                "name": "asgardian-docker-release-local",
+                "name": "mcy-docker-release-local",
                 "bin_mgr_id": "unused",
                 "filters": [
                     {
@@ -42,7 +42,7 @@
             {
                 "type": "repository",
                 "repo_type": "remote",
-                "name": "asgardian-pypi-remote",
+                "name": "mcy-pypi-remote",
                 "bin_mgr_id": "unused",
                 "filters": [
                     {
@@ -60,7 +60,7 @@
     },
     "assigned_policies": [
         {
-            "name": "global_sec",
+            "name": "project_sec",
             "type": "security"
         }
     ]
