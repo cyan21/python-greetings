@@ -27,13 +27,14 @@ target_folder="release"
 
 #checkVar "ARTY_URL ARTY_USER ARTY_APIKEY"
 
-while getopts 'ha:i:n:m:r:t:s:' c
+while getopts 'ha:i:n:m:p:r:t:s:' c
 do
   case $c in
     a) arty_id=$OPTARG ;;
     i) build_id=$OPTARG ;;
     n) build_number=$OPTARG ;;
     m) module_id=$OPTARG ;;
+    p) project=$OPTARG ;;
     t) target_folder=$OPTARG ;;
     r) target_repo=$OPTARG ;;
     s) arty_host=`echo "$OPTARG" | cut -d "/" -f3 | cut -d":" -f1` ;;
@@ -50,6 +51,7 @@ done
 #  --apikey=$ARTY_APIKEY \
 #$arty_id
 echo "arty_id = $arty_id"
+echo "project = $project"
 echo "build_id = $build_id"
 echo "build_number = $build_number"
 echo "module_id = $module_id"
@@ -77,7 +79,8 @@ echo "jfrog rt pipi -r requirements.txt --no-cache-dir --force-reinstall --trust
 jfrog rt pipi -r requirements.txt --no-cache-dir --force-reinstall --trusted-host $arty_host \
   --build-name=$build_id \
   --build-number=$build_number \
-  --module=$module_id
+  --module=$module_id \
+  --project=$project
 
 echo "[INFO] dependencies installed !"
 
@@ -89,9 +92,12 @@ echo "[INFO] uploading wheel package to Artifactory ... "
 jfrog rt u "$target_folder/*" $target_repo \
   --build-name=$build_id \
   --build-number=$build_number \
-  --module=$module_id
+  --module=$module_id \
+  --project=$project
+
 echo "[INFO] wheel package uploaded !"
 
-jfrog rt bce $build_id $build_number
+jfrog rt bce $build_id $build_number  --project=$project
+
 jfrog rt bp $build_id $build_number
 

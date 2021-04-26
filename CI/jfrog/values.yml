@@ -1,6 +1,7 @@
 pythonProject:
   pipelineNameInit: python_project_init
   pipelineNamePythonApp:  python_app
+  project: mcy
   # container image used for the build 
   container:
     registry: platform-us.staging.gcp.devopsacc.team
