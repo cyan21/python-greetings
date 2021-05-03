@@ -1,4 +1,5 @@
 pythonProject:
+  projectKey: mcy
   pipelineNameInit: python_project_init
   pipelineNamePythonApp:  python_app
   project: mcy
