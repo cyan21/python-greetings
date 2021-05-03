@@ -133,7 +133,8 @@ pipelines:
           onStart:
             - cli_path=$(dirname "$(which jfrog)"); curl -fL https://getcli.jfrog.io | sh &&  mv ./jfrog "$cli_path/" && ls -l "$cli_path/jfrog"
             - jfrog --version  
-            - export PATH="$cli_path/jfrog:$PATH"
+            # - export PATH="$cli_path/jfrog:$PATH"
+            - export jfrog_cli_path=$cli_path/jfrog
             - env      
           onSuccess:
             - write_output {{ .Values.pythonInitResources.propertyBag.name }} baseImgTag={{ .Values.pythonProject.container.tag }}
