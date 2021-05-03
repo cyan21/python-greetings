@@ -1,0 +1,6 @@
+FROM releases-docker.jfrog.io/jfrog/pipelines-u20node:12.18.2
+LABEL maintainer="yannc@jfrog.com"
+
+RUN curl -fL https://getcli.jfrog.io | sh &&  chmod 755 jfrog &&  mv jfrog /var/opt/jfrog/pipelines/jfrog/ && /var/opt/jfrog/pipelines/jfrog/jfrog --version
+
+CMD ["/bin/bash", "-c", "jfrog --version"]
