@@ -60,7 +60,7 @@
     },
     "assigned_policies": [
         {
-            "name": "project_sec",
+            "name": "production",
             "type": "security"
         }
     ]

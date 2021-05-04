@@ -7,7 +7,7 @@ usage() {
     echo "$0 -u <JPD_URL> -l <ADMIN_USER> -p <ADMIN_PASS>"
 }
 
-JPD_URL="http://artifactory-eu-yannc3-0.soleng-emea-staging.jfrog.team"
+JPD_URL="https://platform-us.staging.gcp.devopsacc.team"
 ADMIN_USER="admin"
 BUILD_NAMES="python_app"  #list with comma as a separator
 

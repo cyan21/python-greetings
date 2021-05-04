@@ -69,10 +69,10 @@ resources:
 
 pipelines:
   - name: {{ .Values.pythonProject.pipelineNameInit }}
-    configuration:
-      environmentVariables:
-        readOnly:
-          JFROG_CLI_BUILD_PROJECT: {{ .Values.pythonProject.projectKey }}
+    # configuration:
+    #   environmentVariables:
+    #     readOnly:
+    #       JFROG_CLI_BUILD_PROJECT: {{ .Values.pythonProject.projectKey }}
     steps:
       - name: {{ .Values.pythonInitSteps.dockerBuild.name }}
         type: DockerBuild
