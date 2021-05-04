@@ -90,7 +90,7 @@ pipelines:
             - name: {{ .Values.pythonProject.artifactoryIntegration }}
         execution:
           onStart:
-            - cli_path=$(dirname "$(which jfrog)"); curl -fL https://getcli.jfrog.io | sh &&  mv ./jfrog "$cli_path/" && ls -l "$cli_path/jfrog"
+            # - cli_path=$(dirname "$(which jfrog)"); curl -fL https://getcli.jfrog.io | sh &&  mv ./jfrog "$cli_path/" && ls -l "$cli_path/jfrog"
             - jfrog --version
             - cd ${res_{{ .Values.pythonInitResources.gitRepo.name }}_resourcePath}/CI/jfrog
             - git checkout ${res_{{ .Values.pythonInitResources.gitRepo.name }}_branchName}
@@ -131,7 +131,7 @@ pipelines:
             - name: {{ .Values.pythonInitResources.propertyBag.name }}
         execution:
           onStart:
-            - cli_path=$(dirname "$(which jfrog)"); curl -fL https://getcli.jfrog.io | sh &&  mv ./jfrog "$cli_path/" && ls -l "$cli_path/jfrog"
+            # - cli_path=$(dirname "$(which jfrog)"); curl -fL https://getcli.jfrog.io | sh &&  mv ./jfrog "$cli_path/" && ls -l "$cli_path/jfrog"
             - jfrog --version  
             - export PATH="$cli_path:$PATH"
             # - export jfrog_cli_path=$cli_path/jfrog
@@ -178,16 +178,16 @@ pipelines:
             - name: {{ .Values.pythonProject.artifactoryIntegration }}
         execution:
           onStart:
-            - cli_path=$(dirname "$(which jfrog)"); curl -fL https://getcli.jfrog.io | sh &&  mv ./jfrog "$cli_path/" && ls -l "$cli_path/jfrog"
+            # - cli_path=$(dirname "$(which jfrog)"); curl -fL https://getcli.jfrog.io | sh &&  mv ./jfrog "$cli_path/" && ls -l "$cli_path/jfrog"
             - jfrog --version
             - export JFROG_CLI_BUILD_URL="${int_{{ .Values.pythonProject.artifactoryIntegration }}_url/%artifactory/ui}/pipelines/myPipelines/{{ .Values.pythonProject.pipelineNamePythonApp }}/${run_number}/setup_env?branch=${res_{{ .Values.pythonAppResources.gitRepo.name }}_branchName}"
             - cd ${res_{{ .Values.pythonAppResources.gitRepo.name }}_resourcePath} && ls -l
             - git checkout {{ .Values.pythonAppResources.gitRepo.branches.include }} && git branch
             - cat requirements.txt
             - chmod u+x scripts/build.sh 
-            - jfrog rt c show
+            - jfrog config show
 #            - scripts/init.sh -r {{ .Values.pythonProject.python.repoSource }} -s {{ .Values.pythonProject.artifactoryIntegration }}
-            - jfrog rt pip-config --repo-resolve {{ .Values.pythonProject.python.repoSource }} # --server-id-resolve 
+            - jfrog rt pip-config --repo-resolve {{ .Values.pythonProject.python.repoSource }} --server-id-resolve {{ .Values.pythonProject.artifactoryIntegration }} 
             - scripts/build.sh -i {{ .Values.pythonProject.pipelineNamePythonApp }} -n ${run_number} -t release -r {{ .Values.pythonProject.container.repoSource }} -a {{ .Values.pythonProject.artifactoryIntegration }} -s ${int_{{ .Values.pythonProject.artifactoryIntegration }}_url} -m python-module -p {{ .Values.pythonProject.project }}
 
       - name: {{ .Values.pythonAppSteps.xray.name }}
