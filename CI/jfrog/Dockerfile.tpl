@@ -1,4 +1,4 @@
-FROM REGISTRY/continuumio/miniconda3:4.7.12 
+FROM REGISTRY/REPOSITORY/continuumio/miniconda3:4.7.12 
 LABEL maintainer="yannc@jfrog.com"
 
 ARG ARTY_URL
