@@ -91,13 +91,13 @@ pipelines:
             - name: {{ .Values.pythonProject.dockerIntegration }}
         execution:
           onStart:
-            - sed "s/REGISTRY/{{ .Values.pythonProject.container.registry }}/" ${res_{{ .Values.pythonInitResources.gitRepo.name }}_resourcePath}/CI/jfrog/Dockerfile.tpl  > ${res_{{ .Values.pythonInitResources.gitRepo.name }}_resourcePath}/CI/jfrog/Dockerfile 
             # - cli_path=$(dirname "$(which jfrog)"); curl -fL https://getcli.jfrog.io | sh &&  mv ./jfrog "$cli_path/" && ls -l "$cli_path/jfrog"
             - cat ${res_{{ .Values.pythonInitResources.gitRepo.name }}_resourcePath}/CI/jfrog/Dockerfile 
             - jfrog --version
             - cd ${res_{{ .Values.pythonInitResources.gitRepo.name }}_resourcePath}/CI/jfrog
             - git checkout ${res_{{ .Values.pythonInitResources.gitRepo.name }}_branchName}
             - git branch
+            - sed "s/REGISTRY/{{ .Values.pythonProject.container.registry }}/" ${res_{{ .Values.pythonInitResources.gitRepo.name }}_resourcePath}/CI/jfrog/Dockerfile.tpl  > ${res_{{ .Values.pythonInitResources.gitRepo.name }}_resourcePath}/CI/jfrog/Dockerfile 
             - ls -l && chmod +x init.sh
 #            - ./init.sh -u  ${int_{{ .Values.pythonProject.artifactoryIntegration }}_url%/artifactory} -l  ${int_{{ .Values.pythonProject.artifactoryIntegration }}_user} -p ${int_{{ .Values.pythonProject.artifactoryIntegration }}_apikey} 
 
