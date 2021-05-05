@@ -88,9 +88,12 @@ pipelines:
             - name: {{ .Values.pythonInitResources.gitRepo.name }}
           integrations:
             - name: {{ .Values.pythonProject.artifactoryIntegration }}
+            - name: {{ .Values.pythonProject.dockerIntegration }}
         execution:
           onStart:
+            - sed "s/REGISTRY/{{ .Values.pythonProject.container.registry }}/" ${res_{{ .Values.pythonInitResources.gitRepo.name }}_resourcePath}/CI/jfrog/Dockerfile.tpl  > ${res_{{ .Values.pythonInitResources.gitRepo.name }}_resourcePath}/CI/jfrog/Dockerfile 
             # - cli_path=$(dirname "$(which jfrog)"); curl -fL https://getcli.jfrog.io | sh &&  mv ./jfrog "$cli_path/" && ls -l "$cli_path/jfrog"
+            - cat ${res_{{ .Values.pythonInitResources.gitRepo.name }}_resourcePath}/CI/jfrog/Dockerfile 
             - jfrog --version
             - cd ${res_{{ .Values.pythonInitResources.gitRepo.name }}_resourcePath}/CI/jfrog
             - git checkout ${res_{{ .Values.pythonInitResources.gitRepo.name }}_branchName}
@@ -141,19 +144,19 @@ pipelines:
 
   - name: {{ .Values.pythonProject.pipelineNamePythonApp }}
     steps:
-      - name: setup_env
-        type: Bash
-        configuration:
-          affinityGroup: python
-          runtime:
-            type: host
-          inputResources:
-            - name: {{ .Values.pythonInitResources.propertyBag.name }}
-        execution:
-          onExecute:
-            - echo ${res_{{ .Values.pythonInitResources.propertyBag.name }}_baseImgTag}
-            - add_run_variables runVarDockerBaseImgTag=${res_{{ .Values.pythonInitResources.propertyBag.name }}_baseImgTag}
-            - jfrog --version
+      # - name: setup_env
+      #   type: Bash
+      #   configuration:
+      #     affinityGroup: python
+      #     runtime:
+      #       type: host
+      #     inputResources:
+      #       - name: {{ .Values.pythonInitResources.propertyBag.name }}
+      #   execution:
+      #     onExecute:
+      #       - echo ${res_{{ .Values.pythonInitResources.propertyBag.name }}_baseImgTag}
+      #       - add_run_variables runVarDockerBaseImgTag=${res_{{ .Values.pythonInitResources.propertyBag.name }}_baseImgTag}
+      #       - jfrog --version
       - name: {{ .Values.pythonAppSteps.buildApp.name }}
         type: Bash
         configuration:
@@ -166,12 +169,14 @@ pipelines:
               custom:
                 registry: {{ .Values.pythonProject.artifactoryIntegration }}
                 name: "{{ .Values.pythonProject.container.registry }}/{{ .Values.pythonProject.container.repoSource }}/{{ .Values.pythonProject.container.image }}"
-                tag: ${runVarDockerBaseImgTag}
+                # tag: ${runVarDockerBaseImgTag}
+                tag: ${res_{{ .Values.pythonInitResources.propertyBag.name }}_baseImgTag}
                 sourceRepository: {{ .Values.pythonProject.container.repoSource }}
-          inputSteps:
-            - name: setup_env
+          # inputSteps:
+          #   - name: setup_env
           inputResources:
             - name: {{ .Values.pythonAppResources.gitRepo.name }}
+            - name: {{ .Values.pythonInitResources.propertyBag.name }}
           outputResources:
             - name: {{ .Values.pythonAppResources.buildInfo.resourceName }}
           integrations:

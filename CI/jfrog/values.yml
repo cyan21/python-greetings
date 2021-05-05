@@ -14,6 +14,7 @@ pythonProject:
     repoSource: mcy-python
     repoPromotion1: mcy-python-rc-local 
   artifactoryIntegration: artifactory_eu
+  dockerIntegration: mcy_docker_registry
 
 pythonInitResources:
   gitRepo: 
