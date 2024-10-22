@@ -1,0 +1,10 @@
+# [Required] JFrog Applications Config version
+# https://github.com/jfrog/jfrog-apps-config/tree/main
+version: "1.0"
+
+modules:
+  - name: FrogLeapApp
+    exclude_scanners:
+      - secrets
+      - sast
+      - iac 
