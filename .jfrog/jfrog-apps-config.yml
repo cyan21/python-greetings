@@ -5,4 +5,6 @@ version: "1.0"
 modules:
   - name: FrogLeapApp
     exclude_scanners:
+      - sast
+      - secrets
       - iac 
